@@ -85,7 +85,8 @@ export function Chat({
       api: "/api/chat",
       fetch: fetchWithErrorHandlers,
       prepareSendMessagesRequest(request) {
-        return {
+       
+        let requestObj =  {
           body: {
             id: request.id,
             message: request.messages.at(-1),
@@ -93,7 +94,9 @@ export function Chat({
             selectedVisibilityType: visibilityType,
             ...request.body,
           },
-        };
+        }
+        console.log("this is requestObj", requestObj);
+        return requestObj;
       },
     }),
     onData: (dataPart) => {

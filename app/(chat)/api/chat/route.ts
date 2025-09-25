@@ -43,8 +43,14 @@ import type { AppUsage } from "@/lib/usage";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
+import { createGroq } from '@ai-sdk/groq';
 
 export const maxDuration = 60;
+
+const groq = createGroq({
+  baseURL: "https://api.groq.com/openai/v1",
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 let globalStreamContext: ResumableStreamContext | null = null;
 
@@ -86,7 +92,7 @@ export function getStreamContext() {
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
-
+  console.log("this is request", request);
   try {
     const json = await request.json();
     requestBody = postRequestBodySchema.parse(json);
@@ -175,13 +181,14 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
+        let selectedModelType = "chat-model"
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          model: groq('openai/gpt-oss-20b'),
+          system: systemPrompt({ requestHints }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
-            selectedChatModel === "chat-model-reasoning"
+            selectedModelType === "chat-model-reasoning"
               ? []
               : [
                   "getWeather",
@@ -206,8 +213,7 @@ export async function POST(request: Request) {
           onFinish: async ({ usage }) => {
             try {
               const providers = await getTokenlensCatalog();
-              const modelId =
-                myProvider.languageModel(selectedChatModel).modelId;
+              const modelId = "chat-model";
               if (!modelId) {
                 finalMergedUsage = usage;
                 dataStream.write({
@@ -228,6 +234,7 @@ export async function POST(request: Request) {
 
               const summary = getUsage({ modelId, usage, providers });
               finalMergedUsage = { ...usage, ...summary, modelId } as AppUsage;
+              console.log("this is finalMergeUsage", finalMergedUsage);
               dataStream.write({ type: "data-usage", data: finalMergedUsage });
             } catch (err) {
               console.warn("TokenLens enrichment failed", err);
@@ -247,27 +254,28 @@ export async function POST(request: Request) {
       },
       generateId: generateUUID,
       onFinish: async ({ messages }) => {
-        await saveMessages({
-          messages: messages.map((currentMessage) => ({
-            id: currentMessage.id,
-            role: currentMessage.role,
-            parts: currentMessage.parts,
-            createdAt: new Date(),
-            attachments: [],
-            chatId: id,
-          })),
-        });
+        console.log("this is onFinish calling",messages);
+        // await saveMessages({
+        //   messages: messages.map((currentMessage) => ({
+        //     id: currentMessage.id,
+        //     role: currentMessage.role,
+        //     parts: currentMessage.parts,
+        //     createdAt: new Date(),
+        //     attachments: [],
+        //     chatId: id,
+        //   })),
+        // });
 
-        if (finalMergedUsage) {
-          try {
-            await updateChatLastContextById({
-              chatId: id,
-              context: finalMergedUsage,
-            });
-          } catch (err) {
-            console.warn("Unable to persist last usage for chat", id, err);
-          }
-        }
+        // if (finalMergedUsage) {
+        //   try {
+        //     await updateChatLastContextById({
+        //       chatId: id,
+        //       context: finalMergedUsage,
+        //     });
+        //   } catch (err) {
+        //     console.warn("Unable to persist last usage for chat", id, err);
+        //   }
+        // }
       },
       onError: () => {
         return "Oops, an error occurred!";
