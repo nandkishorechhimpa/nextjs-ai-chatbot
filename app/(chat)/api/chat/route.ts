@@ -40,10 +40,11 @@ import {
 import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
-import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import { convertToUIMessages, generateUUID, getMessageFromText, getTextFromMessage } from "@/lib/utils";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 import { createGroq } from '@ai-sdk/groq';
+import { augmentQueryWithContext } from "@/lib/rag/pipeline";
 
 export const maxDuration = 60;
 
@@ -92,6 +93,7 @@ export function getStreamContext() {
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
+  let context = '';
   console.log("this is request", request);
   try {
     const json = await request.json();
@@ -137,8 +139,16 @@ export async function POST(request: Request) {
         return new ChatSDKError("forbidden:chat").toResponse();
       }
     } else {
+   
+      console.log("This is message:", message);
+      const fullText =  getTextFromMessage(message);
+
+      context = await augmentQueryWithContext(fullText);
+      console.log("this is finalPrompt", context);
+
       const title = await generateTitleFromUserMessage({
         message,
+        context
       });
 
       await saveChat({
@@ -150,7 +160,27 @@ export async function POST(request: Request) {
     }
 
     const messagesFromDb = await getMessagesByChatId({ id });
-    const uiMessages = [...convertToUIMessages(messagesFromDb), message];
+     
+    const contextMessage: ChatMessage = {
+              id: generateUUID(),
+              role: "system",
+              parts: [
+                {
+                  type: "text",
+                  text: `You are an expert assistant. Answer the user's question ONLY based on the CONTEXT below. 
+            Do NOT make up answers. If the answer is not in the CONTEXT, respond: "I don't know."
+
+            --- CONTEXT START ---
+            ${context}
+            --- CONTEXT END ---`
+                }
+              ],
+        };
+
+
+    console.log("this is messagesFromDb", messagesFromDb);
+    const uiMessages = [contextMessage, ...convertToUIMessages(messagesFromDb), message];
+    console.log("this is uiMessages", uiMessages);
 
     const { longitude, latitude, city, country } = geolocation(request);
 
@@ -179,18 +209,18 @@ export async function POST(request: Request) {
 
     let finalMergedUsage: AppUsage | undefined;
 
-    const stream = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
-        let selectedModelType = "chat-model"
-        const result = streamText({
-          model: groq('openai/gpt-oss-20b'),
-          system: systemPrompt({ requestHints }),
-          messages: convertToModelMessages(uiMessages),
-          stopWhen: stepCountIs(5),
-          experimental_activeTools:
-            selectedModelType === "chat-model-reasoning"
-              ? []
-              : [
+        const stream = createUIMessageStream({
+          execute: ({ writer: dataStream }) => {
+            let selectedModelType = "chat-model"
+            const result = streamText({
+              model: groq('openai/gpt-oss-20b'),
+              system: systemPrompt({ requestHints }),
+              messages: convertToModelMessages(uiMessages),
+              stopWhen: stepCountIs(5),
+              experimental_activeTools:
+              selectedModelType === "chat-model-reasoning"
+               ? []
+                : [
                   "getWeather",
                   "createDocument",
                   "updateDocument",

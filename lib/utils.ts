@@ -114,3 +114,14 @@ export function getTextFromMessage(message: ChatMessage): string {
     .map((part) => part.text)
     .join('');
 }
+
+export function getMessageFromText(text:string): ChatMessage {
+  return {
+    id: generateUUID(),
+    role: 'user',
+    parts: [{ type: 'text', text }],
+    metadata: {
+      createdAt: formatISO(new Date()),
+    },
+  };
+}

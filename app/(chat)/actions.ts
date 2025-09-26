@@ -23,9 +23,13 @@ export async function saveChatModelAsCookie(model: string) {
 
 export async function generateTitleFromUserMessage({
   message,
+  context
 }: {
   message: UIMessage;
+  context:string;
 }) {
+
+  
   const { text: title } = await generateText({
     model: groq('openai/gpt-oss-20b'),
     system: `\n
@@ -33,9 +37,13 @@ export async function generateTitleFromUserMessage({
     - ensure it is not more than 80 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons`,
-    prompt: JSON.stringify(message),
+    prompt: `User Message: ${JSON.stringify(message)}
+    
+    Relevant Context (from embeddings):
+    ${context}
+    `,
   });
-
+console.log('Generating title with context:', title);
   return title;
 }
 
