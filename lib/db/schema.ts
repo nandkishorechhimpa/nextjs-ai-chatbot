@@ -10,6 +10,8 @@ import {
   timestamp,
   uuid,
   varchar,
+  vector,
+  integer,
 } from "drizzle-orm/pg-core";
 import type { AppUsage } from "../usage";
 
@@ -35,6 +37,9 @@ export const chat = pgTable("Chat", {
 });
 
 export type Chat = InferSelectModel<typeof chat>;
+
+
+
 
 // DEPRECATED: The following schema is deprecated and will be removed in the future.
 // Read the migration guide at https://chat-sdk.dev/docs/migration-guides/message-parts
@@ -108,7 +113,7 @@ export type Vote = InferSelectModel<typeof vote>;
 export const document = pgTable(
   "Document",
   {
-    id: uuid("id").notNull().defaultRandom(),
+    id: uuid("id").primaryKey().defaultRandom(),
     createdAt: timestamp("createdAt").notNull(),
     title: text("title").notNull(),
     content: text("content"),
@@ -118,12 +123,8 @@ export const document = pgTable(
     userId: uuid("userId")
       .notNull()
       .references(() => user.id),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.id, table.createdAt] }),
-    };
   }
+  
 );
 
 export type Document = InferSelectModel<typeof document>;
@@ -171,3 +172,25 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const content = pgTable(
+  "content",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+    docId: uuid("docId").notNull(),
+    docCreatedAt: timestamp("docCreatedAt").notNull(),
+    chunkIndex: integer("chunkIndex").notNull(),
+    text: text("text").notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+  },
+  (table) => ({
+    docRef: foreignKey({
+      columns: [table.docId, table.docCreatedAt],
+      foreignColumns: [document.id, document.createdAt],
+    }),
+  })
+);
+
+
+export type Content = InferSelectModel<typeof content>;
