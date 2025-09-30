@@ -74,7 +74,6 @@ export async function POST(request: Request) {
   }
 
   const document = await saveDocument({
-    id,
     content,
     title,
     kind,
