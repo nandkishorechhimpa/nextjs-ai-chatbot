@@ -3,6 +3,7 @@ import "server-only";
 import {
   and,
   asc,
+  
   count,
   desc,
   eq,
@@ -10,6 +11,7 @@ import {
   gte,
   inArray,
   lt,
+  sql,
   type SQL,
 } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -31,6 +33,8 @@ import {
   type User,
   user,
   vote,
+  content,
+  type Content
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -278,13 +282,12 @@ export async function getVotesByChatId({ id }: { id: string }) {
 }
 
 export async function saveDocument({
-  id,
+  
   title,
   kind,
   content,
   userId,
 }: {
-  id: string;
   title: string;
   kind: ArtifactKind;
   content: string;
@@ -294,14 +297,14 @@ export async function saveDocument({
     return await db
       .insert(document)
       .values({
-        id,
+        
         title,
         kind,
         content,
         userId,
         createdAt: new Date(),
       })
-      .returning();
+      .returning({ id: document.id, createdAt: document.createdAt });
   } catch (_error) {
     throw new ChatSDKError("bad_request:database", "Failed to save document");
   }
@@ -557,6 +560,62 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get stream ids by chat id"
+    );
+  }
+}
+
+export async function saveContent({
+    docId,
+    docCreatedAt,
+    chunkIndex,
+    embedding,
+    text,
+  }: { 
+    text: string;
+    docId: string;
+    docCreatedAt: Date;
+    chunkIndex: number;
+    embedding: number[]; }) {
+  try {
+    return await db.insert(content).values({ 
+      docId,
+    docCreatedAt,
+    chunkIndex,
+    embedding,
+    text,});
+  } catch (_error) {
+    throw new ChatSDKError("bad_request:database", "Failed to save messages");
+  }
+}
+
+export async function findContentByEmbedding(
+  embedding: number[],
+ ) {
+  try {
+    console.log("Finding content by embedding:", embedding);
+    // Convert JS array to pgvector literal string
+    let threshold = 0.4; // Adjust threshold as needed
+    const topK = 5; // Number of top similar items to retrieve
+    const vectorLiteral = `'[${embedding.join(",")}]'::vector`;
+
+    const contents = await db
+      .select()
+      .from(content)
+      .where(
+        sql.raw(`embedding <=> ${vectorLiteral} < ${threshold}`)
+      )
+      .orderBy(
+        sql.raw(`embedding <=> ${vectorLiteral}`)
+      )
+      .limit(topK)
+      .execute();
+
+    return contents;
+  } catch (error) {
+    console.error("Error finding content by embedding:", error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Failed to find content by embedding"
     );
   }
 }

@@ -1,6 +1,6 @@
 import { UIMessage } from "ai";
 import { generateEmbedding } from "./embeddings";
-import { searchSimilarData } from "./retriever";
+import { findSimilarContent } from "./retriever";
 
 /**
  * 3. The main RAG pipeline function. It orchestrates the entire flow:
@@ -12,11 +12,11 @@ import { searchSimilarData } from "./retriever";
  */
 export const  augmentQueryWithContext = async (userQuery:string): Promise<string> => {
     try {
-        // Step 1: Generate an embedding for the query
-        const queryEmbedding =  generateEmbedding(userQuery );
+       
 
         // Step 2: Search for similar data using the embedding
-        const relevantDocs =  searchSimilarData(queryEmbedding,3);
+        const relevantDocs = await  findSimilarContent(userQuery);
+        console.log("Relevant Docs:", relevantDocs);    
 
         // Step 3: Combine the original query with the retrieved context
         const context = relevantDocs.length > 0

@@ -134,14 +134,15 @@ export async function POST(request: Request) {
 
     const chat = await getChatById({ id });
 
-    if (chat) {
-      if (chat.userId !== session.user.id) {
-        return new ChatSDKError("forbidden:chat").toResponse();
-      }
-    } else {
+    // if (chat) {
+    //   if (chat.userId !== session.user.id) {
+    //     return new ChatSDKError("forbidden:chat").toResponse();
+    //   }
+    // } else {
    
       console.log("This is message:", message);
       const fullText =  getTextFromMessage(message);
+      console.log("this is fullText", fullText);
 
       context = await augmentQueryWithContext(fullText);
       console.log("this is finalPrompt", context);
@@ -150,14 +151,15 @@ export async function POST(request: Request) {
         message,
         context
       });
+      console.log("this is title", title);
 
-      await saveChat({
-        id,
-        userId: session.user.id,
-        title,
-        visibility: selectedVisibilityType,
-      });
-    }
+      // await saveChat({
+      //   id,
+      //   userId: session.user.id,
+      //   title,
+      //   visibility: selectedVisibilityType,
+      // });
+    // }
 
     const messagesFromDb = await getMessagesByChatId({ id });
      

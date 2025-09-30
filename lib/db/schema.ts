@@ -182,7 +182,7 @@ export const content = pgTable(
     docCreatedAt: timestamp("docCreatedAt").notNull(),
     chunkIndex: integer("chunkIndex").notNull(),
     text: text("text").notNull(),
-    embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+    embedding: vector("embedding", { dimensions: 384 }).notNull(),
   },
   (table) => ({
     docRef: foreignKey({
