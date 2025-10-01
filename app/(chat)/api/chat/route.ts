@@ -134,11 +134,11 @@ export async function POST(request: Request) {
 
     const chat = await getChatById({ id });
 
-    // if (chat) {
-    //   if (chat.userId !== session.user.id) {
-    //     return new ChatSDKError("forbidden:chat").toResponse();
-    //   }
-    // } else {
+    if (chat) {
+      if (chat.userId !== session.user.id) {
+        return new ChatSDKError("forbidden:chat").toResponse();
+      }
+    } else {
    
       console.log("This is message:", message);
       const fullText =  getTextFromMessage(message);
@@ -153,13 +153,13 @@ export async function POST(request: Request) {
       });
       console.log("this is title", title);
 
-      // await saveChat({
-      //   id,
-      //   userId: session.user.id,
-      //   title,
-      //   visibility: selectedVisibilityType,
-      // });
-    // }
+      await saveChat({
+        id,
+        userId: session.user.id,
+        title,
+        visibility: selectedVisibilityType,
+      });
+    }
 
     const messagesFromDb = await getMessagesByChatId({ id });
      
@@ -287,27 +287,27 @@ export async function POST(request: Request) {
       generateId: generateUUID,
       onFinish: async ({ messages }) => {
         console.log("this is onFinish calling",messages);
-        // await saveMessages({
-        //   messages: messages.map((currentMessage) => ({
-        //     id: currentMessage.id,
-        //     role: currentMessage.role,
-        //     parts: currentMessage.parts,
-        //     createdAt: new Date(),
-        //     attachments: [],
-        //     chatId: id,
-        //   })),
-        // });
+        await saveMessages({
+          messages: messages.map((currentMessage) => ({
+            id: currentMessage.id,
+            role: currentMessage.role,
+            parts: currentMessage.parts,
+            createdAt: new Date(),
+            attachments: [],
+            chatId: id,
+          })),
+        });
 
-        // if (finalMergedUsage) {
-        //   try {
-        //     await updateChatLastContextById({
-        //       chatId: id,
-        //       context: finalMergedUsage,
-        //     });
-        //   } catch (err) {
-        //     console.warn("Unable to persist last usage for chat", id, err);
-        //   }
-        // }
+        if (finalMergedUsage) {
+          try {
+            await updateChatLastContextById({
+              chatId: id,
+              context: finalMergedUsage,
+            });
+          } catch (err) {
+            console.warn("Unable to persist last usage for chat", id, err);
+          }
+        }
       },
       onError: () => {
         return "Oops, an error occurred!";

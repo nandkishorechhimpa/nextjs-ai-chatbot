@@ -209,6 +209,7 @@ export async function getChatById({ id }: { id: string }) {
     if (!selectedChat) {
       return null;
     }
+    console.log("This is selected Chat",selectedChat)
 
     return selectedChat;
   } catch (_error) {

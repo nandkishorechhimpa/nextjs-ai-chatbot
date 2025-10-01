@@ -20,7 +20,7 @@ export function MessageReasoning({
 
   useEffect(() => {
     if (isLoading) {
-      setHasBeenStreaming(true);
+      setHasBeenStreaming(true  );
     }
   }, [isLoading]);
 

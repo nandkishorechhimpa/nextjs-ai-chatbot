@@ -13,6 +13,17 @@ import { generateId } from "ai";
 
 
 export async function POST(request: Request) {
+  try {
+    
+
+  // let  content = ''
+  // request.json().then(data => {
+  //   console.log("Received data:", data);
+  // content =  data.text
+  // }).catch((e) => {
+  //   console.error("Error parsing JSON:", e);
+  // }
+  // );
  
   // const session = await auth();
 
@@ -20,11 +31,13 @@ export async function POST(request: Request) {
   //   return new ChatSDKError("not_found:document").toResponse();
   // }
 
-//   const {
-//     content
-//   }: { content: string; } =
-//     await request.json();
- let content = `TechNova Solutions provides IT consulting, cloud computing, and cybersecurity services. We specialize in cloud migration (AWS, Azure, GCP), managed IT services, and enterprise software solutions. Our cybersecurity offerings include network security, endpoint protection, and compliance with GDPR and ISO 27001. We develop custom applications using React, Node.js, Python, and PostgreSQL, delivering ERP, CRM, and web/mobile apps. Key projects include a cloud migration for a finance firm, a cybersecurity overhaul for a healthcare provider, and an internal logistics management platform. Our 24/7 support ensures minimal downtime, proactive monitoring, and fast issue resolution for clients across multiple industries.`
+  const {
+    text
+  }: { text: string; } =
+    await request.json();
+  console.log("Received text:", text);  
+  let content = text;
+//  let content = `TechNova Solutions provides IT consulting, cloud computing, and cybersecurity services. We specialize in cloud migration (AWS, Azure, GCP), managed IT services, and enterprise software solutions. Our cybersecurity offerings include network security, endpoint protection, and compliance with GDPR and ISO 27001. We develop custom applications using React, Node.js, Python, and PostgreSQL, delivering ERP, CRM, and web/mobile apps. Key projects include a cloud migration for a finance firm, a cybersecurity overhaul for a healthcare provider, and an internal logistics management platform. Our 24/7 support ensures minimal downtime, proactive monitoring, and fast issue resolution for clients across multiple industries.`
 
 
 
@@ -33,7 +46,11 @@ export async function POST(request: Request) {
   }
 
   //Split content into chunks of 500-600 words range to embedding
-  const chunks = splitTextIntoChunks(content, 600);
+  const chunks = splitTextIntoChunks(content, 500);
+  console.log(`Split content into ${chunks.length} chunks`);
+  if(chunks.length === 0){
+    throw new ChatSDKError("not_found:document");
+  }
 
   const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
 
@@ -50,7 +67,7 @@ export async function POST(request: Request) {
   for(let chunk of chunksWithEmbeddings){
     let contentData =  {
             docId: id,
-            docCreatedAt: createdAt,
+            docCreatedAt: createdAt,  
             chunkIndex: chunk.index,
             text: chunk.text,
             embedding: chunk.embedding,
@@ -63,4 +80,13 @@ export async function POST(request: Request) {
   
 
   return Response.json({ status: 200 });
+} catch (error) {
+  console.error("Error in /api/content:", error);
+  if (error instanceof ChatSDKError) {
+    return error.toResponse();
+  }
+
+ 
+}
+
 }
