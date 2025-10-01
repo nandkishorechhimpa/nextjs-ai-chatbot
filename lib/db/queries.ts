@@ -104,6 +104,7 @@ export async function saveChat({
       visibility,
     });
   } catch (_error) {
+    console.log("Error saving chat:", _error);
     throw new ChatSDKError("bad_request:database", "Failed to save chat");
   }
 }
@@ -233,6 +234,8 @@ export async function getMessagesByChatId({ id }: { id: string }) {
       .where(eq(message.chatId, id))
       .orderBy(asc(message.createdAt));
   } catch (_error) {
+    console.log("Error getting messages by chaiID:", _error);
+
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to get messages by chat id"

@@ -135,9 +135,24 @@ export async function POST(request: Request) {
     const chat = await getChatById({ id });
 
     if (chat) {
-      if (chat.userId !== session.user.id) {
-        return new ChatSDKError("forbidden:chat").toResponse();
-      }
+      // if (chat.userId !== session.user.id) {
+      //   return new ChatSDKError("forbidden:chat").toResponse();
+      // }
+
+
+      console.log("This is message:", message);
+      const fullText =  getTextFromMessage(message);
+      console.log("this is fullText", fullText);
+
+      context = await augmentQueryWithContext(fullText);
+      console.log("this is finalPrompt", context);
+
+      const title = await generateTitleFromUserMessage({
+        message,
+        context
+      });
+      console.log("this is title", title);
+
     } else {
    
       console.log("This is message:", message);
@@ -165,20 +180,19 @@ export async function POST(request: Request) {
      
     const contextMessage: ChatMessage = {
               id: generateUUID(),
-              role: "system",
+             role: "system",
               parts: [
                 {
                   type: "text",
                   text: `You are an expert assistant. Answer the user's question ONLY based on the CONTEXT below. 
-            Do NOT make up answers. If the answer is not in the CONTEXT, respond: "I don't know."
-
-            --- CONTEXT START ---
-            ${context}
-            --- CONTEXT END ---`
+                  Do NOT make up answers. If the answer is not in the CONTEXT, respond: "I don't know."
+                  --- CONTEXT START ---
+                  ${context}
+                  --- CONTEXT END ---`
                 }
               ],
         };
-
+    console.log("Msg::",contextMessage);
 
     console.log("this is messagesFromDb", messagesFromDb);
     const uiMessages = [contextMessage, ...convertToUIMessages(messagesFromDb), message];
