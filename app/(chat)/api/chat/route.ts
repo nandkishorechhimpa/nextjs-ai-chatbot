@@ -185,7 +185,8 @@ export async function POST(request: Request) {
                 {
                   type: "text",
                   text: `You are an expert assistant. Answer the user's question ONLY based on the CONTEXT below. 
-                  Do NOT make up answers. If the answer is not in the CONTEXT, respond: "I don't know."
+Do NOT make up answers. If the answer is not present in the CONTEXT, respond politely: 
+"I'm sorry, but I don’t have enough information in the provided context to answer that question."
                   --- CONTEXT START ---
                   ${context}
                   --- CONTEXT END ---`

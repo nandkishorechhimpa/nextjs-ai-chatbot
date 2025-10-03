@@ -10,29 +10,29 @@ type ChunkWithEmbedding = {
   embedding: number[];
 }
 
-export function splitTextIntoChunks(text: string, chunkSize = 200): Chunk[] {
-  try{
-  if (chunkSize <= 0) {
-    throw new Error("Chunk size must be greater than 0");
-  }
-  console.log("Splitting text into chunks of size:",text);
-  const chunks: Chunk[] = [];
-  let start = 0;
-  let index = 0;
+// export function splitTextIntoChunks(text: string, chunkSize = 200): Chunk[] {
+//   try{
+//   if (chunkSize <= 0) {
+//     throw new Error("Chunk size must be greater than 0");
+//   }
+//   console.log("Splitting text into chunks of size:",text);
+//   const chunks: Chunk[] = [];
+//   let start = 0;
+//   let index = 0;
 
-  while (start < text.length) {
-    const chunkText = text.slice(start, start + chunkSize);
-    chunks.push({ index, text: chunkText });
-    start += chunkSize;
-    index += 1;
-  }
+//   while (start < text.length) {
+//     const chunkText = text.slice(start, start + chunkSize);
+//     chunks.push({ index, text: chunkText });
+//     start += chunkSize;
+//     index += 1;
+//   }
 
-  return chunks;
-  }catch(error){
-    console.error("Error in splitTextIntoChunks:", error);  
-    return [{index:0, text:""}];
-}
-}
+//   return chunks;
+//   }catch(error){
+//     console.error("Error in splitTextIntoChunks:", error);  
+//     return [{index:0, text:""}];
+// }
+// }
 
 export async function generateEmbeddingsForChunks(chunks: Chunk[]): Promise<ChunkWithEmbedding[]> {
   let tempChunks: ChunkWithEmbedding[] = chunks.map(chunk => ({...chunk, embedding: []}));

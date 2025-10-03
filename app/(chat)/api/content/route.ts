@@ -7,15 +7,14 @@ import {
 } from "@/lib/db/queries";
 import { Content } from "@/lib/db/schema";
 import { ChatSDKError } from "@/lib/errors";
-import { generateEmbeddingsForChunks, splitTextIntoChunks } from "@/lib/rag/embeddings";
+import { generateEmbeddingsForChunks } from "@/lib/rag/embeddings";
+import { chunkText } from "@/lib/rag/chunker";
 import { generateUUID } from "@/lib/utils";
 import { generateId } from "ai";
 
 
 export async function POST(request: Request) {
-  try {
-    
-
+  try {    
   // let  content = ''
   // request.json().then(data => {
   //   console.log("Received data:", data);
@@ -37,7 +36,7 @@ export async function POST(request: Request) {
     await request.json();
   console.log("Received text:", text);  
   let content = text;
-//  let content = `TechNova Solutions provides IT consulting, cloud computing, and cybersecurity services. We specialize in cloud migration (AWS, Azure, GCP), managed IT services, and enterprise software solutions. Our cybersecurity offerings include network security, endpoint protection, and compliance with GDPR and ISO 27001. We develop custom applications using React, Node.js, Python, and PostgreSQL, delivering ERP, CRM, and web/mobile apps. Key projects include a cloud migration for a finance firm, a cybersecurity overhaul for a healthcare provider, and an internal logistics management platform. Our 24/7 support ensures minimal downtime, proactive monitoring, and fast issue resolution for clients across multiple industries.`
+//  let content = `......MOCK DATA......`
 
 
 
@@ -46,7 +45,7 @@ export async function POST(request: Request) {
   }
 
   //Split content into chunks of 500-600 words range to embedding
-  const chunks = splitTextIntoChunks(content, 500);
+  const chunks = chunkText(content, {overlap:50, chunkSize: 300});
   console.log(`Split content into ${chunks.length} chunks`);
   if(chunks.length === 0){
     throw new ChatSDKError("not_found:document");
