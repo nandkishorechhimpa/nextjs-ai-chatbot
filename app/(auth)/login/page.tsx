@@ -17,6 +17,7 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
 
+  const { data: session } = useSession();
   const [state, formAction] = useActionState<LoginActionState, FormData>(
     login,
     {
@@ -27,6 +28,7 @@ export default function Page() {
   const { update: updateSession } = useSession();
 
   useEffect(() => {
+
     if (state.status === "failed") {
       toast({
         type: "error",
@@ -37,17 +39,28 @@ export default function Page() {
         type: "error",
         description: "Failed validating your submission!",
       });
-    } else if (state.status === "success") {
+    } else if (!isSuccessful && state.status === "success") {
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+      // updateSession();
+      // setUpdateSessionTrigger(true);
+      // router.refresh();
+
+      //  Update session once, then redirect
+      (async () => {
+        await updateSession();
+        router.replace("/"); // redirects without reload
+      })();
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.status, router.refresh, updateSession]);
+  // }, [state.status, router.refresh, updateSession]);
+  }, [state.status, router, updateSession, isSuccessful]);
+
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get("email") as string);
     formAction(formData);
+    router.replace("/");
   };
 
   return (
@@ -56,12 +69,12 @@ export default function Page() {
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
           <h3 className="font-semibold text-xl dark:text-zinc-50">Sign In</h3>
           <p className="text-gray-500 text-sm dark:text-zinc-400">
-            Use your email and password to sign in
+            
           </p>
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>
           <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
-          <p className="mt-4 text-center text-gray-600 text-sm dark:text-zinc-400">
+          {/* <p className="mt-4 text-center text-gray-600 text-sm dark:text-zinc-400">
             {"Don't have an account? "}
             <Link
               className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
@@ -70,7 +83,7 @@ export default function Page() {
               Sign up
             </Link>
             {" for free."}
-          </p>
+          </p> */}
         </AuthForm>
       </div>
     </div>

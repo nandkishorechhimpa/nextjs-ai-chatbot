@@ -8,9 +8,10 @@ import { auth } from "../(auth)/auth";
 
 export default async function Page() {
   const session = await auth();
-
+  console.log("Page - Session:", session);
   if (!session) {
-    redirect("/api/auth/guest");
+    // redirect("/api/auth/guest")
+    redirect("/login");
   }
 
   const id = generateUUID();

@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   }
 
   const session = await auth();
+  console.log("Session - history",session)
 
   if (!session?.user) {
     return new ChatSDKError("unauthorized:chat").toResponse();

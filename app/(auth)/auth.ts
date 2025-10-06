@@ -43,7 +43,7 @@ export const {
       credentials: {},
       async authorize({ email, password }: any) {
         const users = await getUser(email);
-
+        console.log("Authorize - Users found:", users);
         if (users.length === 0) {
           await compare(password, DUMMY_PASSWORD);
           return null;
@@ -65,30 +65,30 @@ export const {
         return { ...user, type: "regular" };
       },
     }),
-    Credentials({
-      id: "guest",
-      credentials: {},
-      async authorize() {
-        const [guestUser] = await createGuestUser();
-        return { ...guestUser, type: "guest" };
-      },
-    }),
+    // Credentials({
+    //   id: "guest",
+    //   credentials: {},
+    //   async authorize() {
+    //     const [guestUser] = await createGuestUser();
+    //     return { ...guestUser, type: "guest" };
+    //   },
+    // }),
   ],
   callbacks: {
     jwt({ token, user }) {
+      console.log("JWT callback - User:", user);
       if (user) {
         token.id = user.id as string;
         token.type = user.type;
       }
-
       return token;
     },
     session({ session, token }) {
+      console.log("Session callback - Token:", token);
       if (session.user) {
         session.user.id = token.id;
         session.user.type = token.type;
       }
-
       return session;
     },
   },

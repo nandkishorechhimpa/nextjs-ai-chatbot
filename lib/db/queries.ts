@@ -37,6 +37,7 @@ import {
   type Content
 } from "./schema";
 import { generateHashedPassword } from "./utils";
+import { id } from "zod/v4/locales";
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -614,6 +615,8 @@ export async function findContentByEmbedding(
       .limit(topK)
       .execute();
 
+      console.log("distance results:", contents);
+
     return contents;
   } catch (error) {
     console.error("Error finding content by embedding:", error);
@@ -622,4 +625,7 @@ export async function findContentByEmbedding(
       "Failed to find content by embedding"
     );
   }
+  
+
+
 }

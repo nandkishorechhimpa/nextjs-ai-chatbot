@@ -6,6 +6,7 @@ import { isDevelopmentEnvironment } from "@/lib/constants";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const redirectUrl = searchParams.get("redirectUrl") || "/";
+  console.log("Redirect URL:", redirectUrl);
 
   const token = await getToken({
     req: request,
