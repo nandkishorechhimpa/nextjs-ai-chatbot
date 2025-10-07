@@ -39,6 +39,7 @@ export function PureMessageActions({
       toast.error("There's no text to copy!");
       return;
     }
+    console.log("textFromParts", textFromParts);
 
     await copyToClipboard(textFromParts);
     toast.success("Copied to clipboard!");
@@ -72,7 +73,7 @@ export function PureMessageActions({
         <CopyIcon />
       </Action>
 
-      <Action
+      {/* <Action
         data-testid="message-upvote"
         disabled={vote?.isUpvoted}
         onClick={() => {
@@ -168,7 +169,7 @@ export function PureMessageActions({
         tooltip="Downvote Response"
       >
         <ThumbDownIcon />
-      </Action>
+      </Action> */}
     </Actions>
   );
 }
