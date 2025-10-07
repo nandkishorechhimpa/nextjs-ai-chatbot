@@ -1,4 +1,7 @@
 "use client";
+
+import { CrossIcon } from "./icons";
+
 // components/ChatbotWidget.tsx
 export default function ChatbotWidget({ setIsChatbotCollapsed }: { setIsChatbotCollapsed: (value: boolean) => void }) {
   // prevent recursive iframe loading
@@ -12,6 +15,7 @@ export default function ChatbotWidget({ setIsChatbotCollapsed }: { setIsChatbotC
     {/* Add a float button on the iframe to close it */}
     <button
       onClick={() => setIsChatbotCollapsed(true)}
+      className="flex items-center justify-center"
       style={{
         position: "fixed",
         bottom: "630px",
@@ -26,9 +30,11 @@ export default function ChatbotWidget({ setIsChatbotCollapsed }: { setIsChatbotC
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         zIndex: 10000,
       }}
-      title="Close Chatbot">X</button>
+      title="Close Chatbot">
+        <CrossIcon />
+      </button>
      <iframe
-      src="https://woodenspecialist.com/"
+      src="https://nextjs-ai-chatbot-chi-jade-33.vercel.app"
       title="NTech Chatbot"
       style={{
         position: "fixed",
