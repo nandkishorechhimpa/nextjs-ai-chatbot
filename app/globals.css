@@ -47,6 +47,7 @@
   /* border radius unit */
   --radius: 0.5rem;
   --sidebar: hsl(0 0% 98%);
+  --prompt-button: #f57c00;
 }
 
 /* define design tokens (dark mode) */

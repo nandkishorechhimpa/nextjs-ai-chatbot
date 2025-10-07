@@ -26,8 +26,8 @@ function PureChatHeader({
 
   return (
     <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
-      <SidebarToggle />
-
+      {/* <SidebarToggle /> */}
+{/* 
       {(!open || windowWidth < 768) && (
         <Button
           className="order-2 ml-auto h-8 px-2 md:order-1 md:ml-0 md:h-fit md:px-2"
@@ -40,17 +40,17 @@ function PureChatHeader({
           <PlusIcon />
           <span className="md:sr-only">New Chat</span>
         </Button>
-      )}
-
+      )} */}
+{/* 
       {!isReadonly && (
         <VisibilitySelector
           chatId={chatId}
           className="order-1 md:order-2"
           selectedVisibilityType={selectedVisibilityType}
         />
-      )}
+      )} */}
 
-      <Button
+      {/* <Button
         asChild
         className="order-3 hidden bg-zinc-900 px-2 text-zinc-50 hover:bg-zinc-800 md:ml-auto md:flex md:h-fit dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
@@ -59,7 +59,7 @@ function PureChatHeader({
         >
         Document Emmbeddings  
         </Link>
-      </Button>
+      </Button> */}
     </header> 
   );
 }

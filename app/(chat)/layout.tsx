@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { DataStreamProvider } from "@/components/data-stream-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { auth } from "../(auth)/auth";
+import { ChatbotContainer } from "@/components/ui/chatbot-container";
 
 export const experimental_ppr = true;
 
@@ -24,10 +25,15 @@ export default async function Layout({
       />
       <DataStreamProvider>
         <SidebarProvider defaultOpen={!isCollapsed}>
-          <AppSidebar user={session?.user} />
+          {/* <AppSidebar user={session?.user} /> */}
           <SidebarInset>{children}</SidebarInset>
         </SidebarProvider>
+         <ChatbotContainer />
       </DataStreamProvider>
+       {/* Chatbot iframe */}
+
     </>
+
+    
   );
 }
