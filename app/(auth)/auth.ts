@@ -65,14 +65,14 @@ export const {
         return { ...user, type: "regular" };
       },
     }),
-    // Credentials({
-    //   id: "guest",
-    //   credentials: {},
-    //   async authorize() {
-    //     const [guestUser] = await createGuestUser();
-    //     return { ...guestUser, type: "guest" };
-    //   },
-    // }),
+    Credentials({
+      id: "guest",
+      credentials: {},
+      async authorize() {
+        const [guestUser] = await createGuestUser();
+        return { ...guestUser, type: "guest" };
+      },
+    }),
   ],
   callbacks: {
     jwt({ token, user }) {

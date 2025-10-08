@@ -20,8 +20,8 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const session = await auth();
 
   if (!session) {
-    // redirect("/api/auth/guest");
-    redirect("/login");
+    redirect("/api/auth/guest");
+    // redirect("/login");
 
   }
 
