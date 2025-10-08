@@ -74,7 +74,7 @@ export function MessageEditor({
           Cancel
         </Button>
         <Button
-          className="h-fit px-3 py-2"
+          className="h-fit px-3 py-2 primary-button-color"
           data-testid="message-editor-send-button"
           disabled={isSubmitting}
           onClick={async () => {

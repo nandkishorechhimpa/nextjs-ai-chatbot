@@ -24,6 +24,9 @@ import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
+import { BrainIcon } from "lucide-react";
+import Image from "next/image";
+import { Skeleton } from "./ui/skeleton";
 
 const PurePreviewMessage = ({
   chatId,
@@ -67,11 +70,22 @@ const PurePreviewMessage = ({
         })}
       >
         {message.role === "assistant" && (
-          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-            <SparklesIcon size={14} />
+
+          <div className=" flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border mt-[5px]">
+            {/* <SparklesIcon size={14} />
+             */}
+             <Image
+              src="/logo/LogoWhiteBack16-16.png"
+              alt="logo"
+              className="mil-logo "
+              width={16}
+              height={16}
+              style={{ width: 16 }} 
+              />
+             
           </div>
         )}
-
+       
         <div
           className={cn("flex flex-col", {
             "gap-2 md:gap-4": message.parts?.some(
@@ -105,7 +119,13 @@ const PurePreviewMessage = ({
               ))}
             </div>
           )}
-
+          {
+            message.parts?.length === 0 && message.role === "assistant" && (
+              <div className="p-0 text-muted-foreground text-sm">
+                <LoadingText>Thinking...</LoadingText>
+              </div>
+            )
+          }
           {message.parts?.map((part, index) => {
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
@@ -119,29 +139,43 @@ const PurePreviewMessage = ({
             //     />
             //   );
             // }
+            // if(isLoading && message.role === "assistant"){
+            //   return (
+            //   <div className="flex w-full flex-row items-center gap-3" key={key}>
+            //     <BrainIcon className="size-4" />
+            //     <p>Thinking...</p>
+            //   </div>
+            //   )
+            // }
 
             if (type === "text") {
               if (mode === "view") {
                 return (
                   <div key={key}>
+                    {/* {message.role === "assistant"  && (
+                      
+                    <span className="text-[12px] md:text-[14px]">AI Assistant</span>
+                      )} */}
                     <MessageContent
                       className={cn({
-                        "w-fit break-words rounded-2xl px-3 py-2 text-right text-white":
+                        "w-fit break-words rounded-[10px]  text-right text-white primary-button-color":
                           message.role === "user",
-                        "bg-transparent px-0 py-0 text-left":
+                        "w-fit bg-transparent rounded-[10px]  text-left":
                           message.role === "assistant",
                       })}
                       data-testid="message-content"
                       style={
                         message.role === "user"
-                          ? { backgroundColor: "#006cff" }
-                          : undefined
+                          ? { padding:"14px 18px"}
+                          : {padding:"14px 18px"}
                       }
                     >
                       <Response>{sanitizeText(part.text)}</Response>
                     </MessageContent>
                   </div>
                 );
+                
+
               }
 
               if (mode === "edit") {
@@ -164,6 +198,7 @@ const PurePreviewMessage = ({
                 );
               }
             }
+
 
             if (type === "tool-getWeather") {
               const { toolCallId, state } = part;
@@ -322,12 +357,29 @@ export const ThinkingMessage = () => {
     >
       <div className="flex items-start justify-start gap-3">
         <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-          <SparklesIcon size={14} />
+          {/* <SparklesIcon size={14} /> */}
+               <Image
+              src="/logo/LogoWhiteBack16-16.png"
+              alt="logo"
+              className="mil-logo "
+              width={16}
+              height={16}
+              style={{ width: 16 }} 
+              />
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
-          <div className="p-0 text-muted-foreground text-sm">
-            <LoadingText>Thinking...</LoadingText>
+          <div className="p-0 gap-4 flex flex-col text-black text-sm dark:text-white">
+            {/* <LoadingText>Thinking...</LoadingText> */}
+                <Skeleton
+                  className="w-full h-2 rounded-md"
+                  data-sidebar="menu-skeleton-icon"
+            />
+             <Skeleton
+                  className="w-full h-2 rounded-md"
+                  data-sidebar="menu-skeleton-icon"
+            /> 
+          
           </div>
         </div>
       </div>
@@ -339,7 +391,7 @@ const LoadingText = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
       animate={{ backgroundPosition: ["100% 50%", "-100% 50%"] }}
-      className="flex items-center text-transparent"
+      className="flex items-center "
       style={{
         background:
           "linear-gradient(90deg, hsl(var(--muted-foreground)) 0%, hsl(var(--muted-foreground)) 35%, hsl(var(--foreground)) 50%, hsl(var(--muted-foreground)) 65%, hsl(var(--muted-foreground)) 100%)",
