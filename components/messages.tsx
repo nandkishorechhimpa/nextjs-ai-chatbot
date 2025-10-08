@@ -20,6 +20,8 @@ type MessagesProps = {
   isReadonly: boolean;
   isArtifactVisible: boolean;
   selectedModelId: string;
+  setShowLoading: (show: boolean) => void;
+  showLoading: boolean;
 };
 
 function PureMessages({
@@ -31,6 +33,8 @@ function PureMessages({
   regenerate,
   isReadonly,
   selectedModelId,
+  setShowLoading,
+  showLoading,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -74,6 +78,7 @@ function PureMessages({
               isLoading={
                 status === "streaming" && messages.length - 1 === index
               }
+            
               isReadonly={isReadonly}
               key={message.id}
               message={message}
@@ -89,6 +94,8 @@ function PureMessages({
               }
             />
           ))}
+
+          {/* {showLoading && <ThinkingMessage /> } */}
 
           {status === "submitted" &&
             messages.length > 0 &&

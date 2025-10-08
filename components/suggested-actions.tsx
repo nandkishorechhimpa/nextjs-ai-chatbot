@@ -15,15 +15,19 @@ type SuggestedActionsProps = {
 
 function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
   const suggestedActions = [
-    "What are the advantages of using Next.js?",
-    "Write code to demonstrate Dijkstra's algorithm",
-    "Help me write an essay about Silicon Valley",
-    "What is the weather in San Francisco?",
+    // "What are the advantages of using Next.js?",
+    // "Write code to demonstrate Dijkstra's algorithm",
+    // "Help me write an essay about Silicon Valley",
+    // "What is the weather in San Francisco?",
+      "Can you help me build a website for my business?",
+      "I want to develop a mobile app, where do I start?",
+      "How can AI improve my business operations?",
+      "What is RAG and how does it work in AI systems?",
   ];
 
   return (
     <div
-      className="grid w-full gap-2 sm:grid-cols-2"
+      className="grid w-full gap-2 sm:grid-cols-2 "
       data-testid="suggested-actions"
     >
       {suggestedActions.map((suggestedAction, index) => (
@@ -35,7 +39,7 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
           transition={{ delay: 0.05 * index }}
         >
           <Suggestion
-            className="h-auto w-full whitespace-normal p-3 text-left"
+            className="h-auto w-full whitespace-normal p-3 text-left primary-a-color "
             onClick={(suggestion) => {
               window.history.replaceState({}, "", `/chat/${chatId}`);
               sendMessage({

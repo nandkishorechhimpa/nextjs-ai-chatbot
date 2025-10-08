@@ -233,7 +233,7 @@ function PureMultimodalInput({
   );
 
   return (
-    <div className={cn("relative flex w-full flex-col gap-4", className)}>
+    <div className={cn("relative flex w-full flex-col gap-4  ", className)}>
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
@@ -245,7 +245,7 @@ function PureMultimodalInput({
         )}
 
       <input
-        className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
+        className="-top-4 -left-4  pointer-events-none fixed size-0.5 opacity-0"
         multiple
         onChange={handleFileChange}
         ref={fileInputRef}
@@ -254,7 +254,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="rounded-xl border border-border bg-background p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
+        className="rounded-xl border border-border bg-transparent secondary-text-color p-3 shadow-xs transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
         onSubmit={(event) => {
           event.preventDefault();
           if (status !== "ready") {
@@ -297,23 +297,37 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-        <div className="flex flex-row items-start gap-1 sm:gap-2">
+        <div className="flex flex-row items-start justify-between gap-1 py-0 sm:gap-2">
           <PromptInputTextarea
             autoFocus
-            className="grow resize-none border-0! border-none! bg-transparent p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none!  p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
-            maxHeight={150}
+            maxHeight={44}
             minHeight={44}
             onChange={handleInput}
-            placeholder="Send a message..."
+            placeholder="Ask a question..."
             ref={textareaRef}
             rows={1}
             value={input}
-          />{" "}
-          <Context {...contextProps} />
+          />{" "} 
+          {/* <Context {...contextProps} /> */}
+          <div>
+           
+          {status === "submitted" ? (
+            <StopButton setMessages={setMessages} stop={stop} />
+          ) : (
+            <PromptInputSubmit
+              className="size-8 rounded-full bg-[#1F6FEB] text-primary-foreground transition-colors duration-200 hover:bg-[#1F6FEB]/90 disabled:bg-[#1F6FEB]/40 disabled:text-muted-foreground"
+              disabled={!input.trim() || uploadQueue.length > 0}
+              status={status}
+            >
+              <ArrowUpIcon size={14} />
+            </PromptInputSubmit>
+          )}
+          </div>
         </div>
-        <PromptInputToolbar className="flex justify-end !border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!">
+        {/* <PromptInputToolbar className="flex justify-end !border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!"> */}
           {/* <PromptInputTools className="gap-0 sm:gap-0.5">
             <AttachmentsButton
               fileInputRef={fileInputRef}
@@ -325,7 +339,7 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
             />
           </PromptInputTools> */}
-
+{/* 
           {status === "submitted" ? (
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (
@@ -336,8 +350,8 @@ function PureMultimodalInput({
             >
               <ArrowUpIcon size={14} />
             </PromptInputSubmit>
-          )}
-        </PromptInputToolbar>
+          )} */}
+        {/* </PromptInputToolbar> */}
       </PromptInput>
     </div>
   );
@@ -463,7 +477,7 @@ function PureStopButton({
 }) {
   return (
     <Button
-      className="size-7 rounded-full bg-foreground p-1 text-background transition-colors duration-200 hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground"
+      className="size-7 rounded-full bg-white p-1 text-background transition-colors duration-200 hover:bg-white/90 disabled:bg-white disabled:text-muted-foreground"
       data-testid="stop-button"
       onClick={(event) => {
         event.preventDefault();

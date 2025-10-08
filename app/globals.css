@@ -89,7 +89,7 @@
 
 /* define theme */
 @theme {
-  --font-sans: var(--font-geist);
+  --font-sans: var(--font-mont);
   --font-mono: var(--font-geist-mono);
 
   --breakpoint-toast-mobile: 600px;
@@ -315,4 +315,102 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes splash {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-splash {
+  animation: splash 1.5s infinite linear;
+}
+.heading1{
+  font-family: Montserrat;
+  font-size: 48px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 58px;
+  font-weight: bold;
+}
+
+.heading2{
+  font-family: Montserrat;
+  font-size: 40px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 48px;
+  /* font-weight: bold; */
+}
+
+.heading3{
+  font-family: Montserrat;
+  font-size: 32px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 42px;
+  /* font-weight: bold; */
+}
+
+.heading4{
+  font-family: Montserrat;
+  font-size: 24px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 34px;
+  /* font-weight: bold; */
+}
+
+.heading5{
+  font-family: Montserrat;
+  font-size: 20px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 28px;
+  /* font-weight: bold; */
+}
+.heading6{
+  font-family: Montserrat;
+  font-size: 9px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 27px;
+  /* font-weight: bold; */
+  }
+.para{
+  font-family: Montserrat;
+  font-size: 16px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 24px;
+}
+.primary-text-color{
+  color: #0C1B2B;
+}
+.secondary-text-color{
+  color: #333333;
+}
+.primary-button-color{
+  background-color: #1F6FEB;
+}
+.primary-a-color{
+  color: #1F6FEB;
+}
+
+.primary-bg-color{
+  background-color: #FFFFFF;
+}
+.secondary-bg-color{
+  background-color: #F5F5F5;
+}
+.third-bg-color{
+  background-color:#1218200d;
+}
+
+html, body {
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }

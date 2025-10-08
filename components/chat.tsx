@@ -63,6 +63,7 @@ export function Chat({
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
   const [currentModelId, setCurrentModelId] = useState(initialChatModel);
   const currentModelIdRef = useRef(currentModelId);
+  const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
     currentModelIdRef.current = currentModelId;
@@ -96,10 +97,12 @@ export function Chat({
           },
         }
         console.log("this is requestObj", requestObj);
+        setShowLoading(true);
         return requestObj;
       },
     }),
     onData: (dataPart) => {
+      setShowLoading(false);
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
       if (dataPart.type === "data-usage") {
         setUsage(dataPart.data);
@@ -109,6 +112,7 @@ export function Chat({
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
     onError: (error) => {
+      setShowLoading(false);
       if (error instanceof ChatSDKError) {
         // Check if it's a credit card error
         if (
@@ -159,7 +163,7 @@ export function Chat({
 
   return (
     <>
-      <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col bg-background">
+      <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col ">
         <ChatHeader
           chatId={id}
           isReadonly={isReadonly}
@@ -176,9 +180,11 @@ export function Chat({
           setMessages={setMessages}
           status={status}
           votes={votes}
+          setShowLoading={setShowLoading}
+          showLoading={showLoading}
         />
 
-        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
+        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0  px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
             <MultimodalInput
               attachments={attachments}
