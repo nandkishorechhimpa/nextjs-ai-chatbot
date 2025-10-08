@@ -11,11 +11,11 @@ export const ChatbotContainer = () => {
   // If the chatbot is collapsed, show a button to expand it
   return (
     <>
-      {isChatbotCollapsed ? (
+      {/* {isChatbotCollapsed ? (
         <ChatbotButton setIsChatbotCollapsed={setIsChatbotCollapsed} />
       ) : (
         <ChatbotWidget  setIsChatbotCollapsed={setIsChatbotCollapsed}/>
-      )}
+      )} */}
     </>
   );
 }
