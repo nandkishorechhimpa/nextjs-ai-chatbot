@@ -49,7 +49,12 @@ const db = drizzle(client);
 
 export async function getUser(email: string): Promise<User[]> {
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    return await db.select({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+    }).from(user).where(eq(user.email, email));
   } catch (_error) {
     throw new ChatSDKError(
       "bad_request:database",
