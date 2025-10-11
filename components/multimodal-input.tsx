@@ -306,29 +306,29 @@ function PureMultimodalInput({
             maxHeight={44}
             minHeight={44}
             onChange={handleInput}
-            placeholder="Ask a question..."
+            placeholder="Discover what we offer — just start typing!"
             ref={textareaRef}
             rows={1}
             value={input}
-          />{" "} 
+          />{" "}
           {/* <Context {...contextProps} /> */}
           <div>
-           
-          {status === "submitted" ? (
-            <StopButton setMessages={setMessages} stop={stop} />
-          ) : (
-            <PromptInputSubmit
-              className="size-8 rounded-full bg-[#1F6FEB] text-primary-foreground transition-colors duration-200 hover:bg-[#1F6FEB]/90 disabled:bg-[#1F6FEB]/40 disabled:text-muted-foreground"
-              disabled={!input.trim() || uploadQueue.length > 0}
-              status={status}
-            >
-              <ArrowUpIcon size={14} />
-            </PromptInputSubmit>
-          )}
+
+            {status === "submitted" ? (
+              <StopButton setMessages={setMessages} stop={stop} />
+            ) : (
+              <PromptInputSubmit
+                className="size-8 rounded-full bg-[#1F6FEB] text-primary-foreground transition-colors duration-200 hover:bg-[#1F6FEB]/90 disabled:bg-[#1F6FEB]/40 disabled:text-muted-foreground"
+                disabled={!input.trim() || uploadQueue.length > 0}
+                status={status}
+              >
+                <ArrowUpIcon size={14} />
+              </PromptInputSubmit>
+            )}
           </div>
         </div>
         {/* <PromptInputToolbar className="flex justify-end !border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!"> */}
-          {/* <PromptInputTools className="gap-0 sm:gap-0.5">
+        {/* <PromptInputTools className="gap-0 sm:gap-0.5">
             <AttachmentsButton
               fileInputRef={fileInputRef}
               selectedModelId={selectedModelId}
@@ -339,7 +339,7 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
             />
           </PromptInputTools> */}
-{/* 
+        {/* 
           {status === "submitted" ? (
             <StopButton setMessages={setMessages} stop={stop} />
           ) : (

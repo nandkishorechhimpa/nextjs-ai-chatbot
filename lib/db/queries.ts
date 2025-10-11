@@ -3,7 +3,7 @@ import "server-only";
 import {
   and,
   asc,
-  
+
   count,
   desc,
   eq,
@@ -34,7 +34,8 @@ import {
   user,
   vote,
   content,
-  type Content
+  type Content,
+  resource
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 import { id } from "zod/v4/locales";
@@ -216,7 +217,7 @@ export async function getChatById({ id }: { id: string }) {
     if (!selectedChat) {
       return null;
     }
-    console.log("This is selected Chat",selectedChat)
+    console.log("This is selected Chat", selectedChat)
 
     return selectedChat;
   } catch (_error) {
@@ -292,7 +293,7 @@ export async function getVotesByChatId({ id }: { id: string }) {
 }
 
 export async function saveDocument({
-  
+
   title,
   kind,
   content,
@@ -307,7 +308,7 @@ export async function saveDocument({
     return await db
       .insert(document)
       .values({
-        
+
         title,
         kind,
         content,
@@ -575,24 +576,26 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
 }
 
 export async function saveContent({
-    docId,
-    docCreatedAt,
-    chunkIndex,
-    embedding,
-    text,
-  }: { 
-    text: string;
-    docId: string;
-    docCreatedAt: Date;
-    chunkIndex: number;
-    embedding: number[]; }) {
+  docId,
+  docCreatedAt,
+  chunkIndex,
+  embedding,
+  text,
+}: {
+  text: string;
+  docId: string;
+  docCreatedAt: Date;
+  chunkIndex: number;
+  embedding: number[];
+}) {
   try {
-    return await db.insert(content).values({ 
+    return await db.insert(content).values({
       docId,
-    docCreatedAt,
-    chunkIndex,
-    embedding,
-    text,});
+      docCreatedAt,
+      chunkIndex,
+      embedding,
+      text,
+    });
   } catch (_error) {
     throw new ChatSDKError("bad_request:database", "Failed to save messages");
   }
@@ -600,7 +603,7 @@ export async function saveContent({
 
 export async function findContentByEmbedding(
   embedding: number[],
- ) {
+) {
   try {
     console.log("Finding content by embedding:", embedding);
     // Convert JS array to pgvector literal string
@@ -620,7 +623,7 @@ export async function findContentByEmbedding(
       .limit(topK)
       .execute();
 
-      console.log("distance results:", contents);
+    console.log("distance results:", contents);
 
     return contents;
   } catch (error) {
@@ -630,7 +633,32 @@ export async function findContentByEmbedding(
       "Failed to find content by embedding"
     );
   }
-  
 
 
+
+}
+
+export async function saveResource({
+  userId,
+  filepath,
+  url,
+  filesize,
+}: {
+  userId: string;
+  filepath: string;
+  url: string;
+  filesize: number;
+}) {
+  try {
+    return await db.insert(resource).values({
+      userId,
+      filepath,
+      url,
+      filesize,
+      uploadedAt: new Date()
+    });
+  } catch (_error) {
+    console.log("Error saving resource:", _error);
+    throw new ChatSDKError("bad_request:database", "Failed to save messages");
+  }
 }

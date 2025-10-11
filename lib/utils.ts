@@ -116,7 +116,7 @@ export function getTextFromMessage(message: ChatMessage): string {
     .join('');
 }
 
-export function getMessageFromText(text:string): ChatMessage {
+export function getMessageFromText(text: string): ChatMessage {
   return {
     id: generateUUID(),
     role: 'user',
@@ -126,3 +126,4 @@ export function getMessageFromText(text:string): ChatMessage {
     },
   };
 }
+
