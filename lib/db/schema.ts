@@ -15,6 +15,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AppUsage } from "../usage";
 
+// USER
 export const user = pgTable("User", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   email: varchar("email", { length: 64 }).notNull(),
@@ -23,6 +24,7 @@ export const user = pgTable("User", {
 
 export type User = InferSelectModel<typeof user>;
 
+//CHAT
 export const chat = pgTable("Chat", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   createdAt: timestamp("createdAt").notNull(),
@@ -55,6 +57,8 @@ export const messageDeprecated = pgTable("Message", {
 
 export type MessageDeprecated = InferSelectModel<typeof messageDeprecated>;
 
+
+//NEW MESSAGES
 export const message = pgTable("Message_v2", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   chatId: uuid("chatId")
@@ -90,6 +94,7 @@ export const voteDeprecated = pgTable(
 
 export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>;
 
+//NEW VOTES
 export const vote = pgTable(
   "Vote_v2",
   {
@@ -110,6 +115,8 @@ export const vote = pgTable(
 
 export type Vote = InferSelectModel<typeof vote>;
 
+
+//DOCUMENTS
 export const document = pgTable(
   "Document",
   {
@@ -120,6 +127,8 @@ export const document = pgTable(
     kind: varchar("text", { enum: ["text", "code", "image", "sheet"] })
       .notNull()
       .default("text"),
+    source: varchar("source", { enum: ["url", "file"] }),
+    url: text("url"),
     userId: uuid("userId")
       .notNull()
       .references(() => user.id),

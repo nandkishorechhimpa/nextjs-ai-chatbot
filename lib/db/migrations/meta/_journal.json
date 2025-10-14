@@ -15,6 +15,13 @@
       "when": 1758889539792,
       "tag": "0001_greedy_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760359673077,
+      "tag": "0002_wide_quasimodo",
+      "breakpoints": true
     }
   ]
 }

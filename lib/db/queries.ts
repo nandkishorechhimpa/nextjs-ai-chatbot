@@ -292,11 +292,16 @@ export async function saveDocument({
   kind,
   content,
   userId,
+  source,
+  url,
+
 }: {
   title: string;
   kind: ArtifactKind;
   content: string;
   userId: string;
+  source?: "url" | "file";
+  url?: string;
 }) {
   try {
     return await db
@@ -308,6 +313,8 @@ export async function saveDocument({
         content,
         userId,
         createdAt: new Date(),
+        source,
+        url
       })
       .returning({ id: document.id, createdAt: document.createdAt });
   } catch (_error) {
@@ -623,6 +630,39 @@ export async function findContentByEmbedding(
     throw new ChatSDKError(
       "bad_request:database",
       "Failed to find content by embedding"
+    );
+  }
+  
+
+
+}
+
+export async function findDocumentFromUrl(url: string,
+  source: "file"|"url",
+ ) {
+  try {
+    console.log("Finding document from url:", url);
+    const documents = await db
+      .select()
+      .from(document)
+      .where(
+        eq(document.url, url)
+      )
+      .orderBy(
+        desc(document.createdAt)
+      )
+      .limit(1)
+      .execute();
+
+      console.log("Document results:", documents);
+
+
+    return documents;
+  } catch (error) {
+    console.error("Error finding document from url:", error);
+    throw new ChatSDKError(
+      "bad_request:database",
+      "Error finding document from url"
     );
   }
   
