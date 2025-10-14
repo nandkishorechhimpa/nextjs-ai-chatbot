@@ -17,12 +17,12 @@ export const Greeting = () => {
       </motion.div>
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="text-xl  md:text-2xl"
+        className="text-xl  md:text-xl"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
       >
-        How can I help you today?
+        Ask me anything and let’s explore together!
       </motion.div>
     </div>
   );

@@ -10,6 +10,7 @@ import { PlusIcon, VercelIcon } from "./icons";
 import { useSidebar } from "./ui/sidebar";
 import { VisibilitySelector, type VisibilityType } from "./visibility-selector";
 import { Header } from "./header";
+import { useSession } from "next-auth/react";
 
 function PureChatHeader({
   chatId,
@@ -25,6 +26,8 @@ function PureChatHeader({
 
   const { width: windowWidth } = useWindowSize();
 
+    const { data, status } = useSession();
+  console.log("Data in the chatHeader:",data)
   return (
     <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2 shadow-sm ">
       {/* <SidebarToggle /> */}
@@ -51,7 +54,7 @@ function PureChatHeader({
         />
       )} */}
 
-      {/* <Button
+      { data?.user?.role == "admin" && <Button
         asChild
         className="order-3 hidden bg-zinc-900 px-2 text-zinc-50 hover:bg-zinc-800 md:ml-auto md:flex md:h-fit dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
@@ -60,7 +63,7 @@ function PureChatHeader({
         >
         Document Emmbeddings  
         </Link>
-      </Button> */}
+      </Button>}
 
       <Header />
     </header> 

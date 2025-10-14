@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['pdf-parse'],
   experimental: {
-    ppr: true,
+    // ppr: true,
     reactCompiler: false,
+
+
 
   },
   devIndicators: {
@@ -17,7 +20,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-   async headers() {
+  async headers() {
     return [
       {
         source: "/(.*)", // all routes

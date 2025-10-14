@@ -3,7 +3,7 @@ import "server-only";
 import {
   and,
   asc,
-  
+
   count,
   desc,
   eq,
@@ -34,7 +34,8 @@ import {
   user,
   vote,
   content,
-  type Content
+  type Content,
+  resource
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 import { id } from "zod/v4/locales";
@@ -49,7 +50,12 @@ const db = drizzle(client);
 
 export async function getUser(email: string): Promise<User[]> {
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    return await db.select({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+    }).from(user).where(eq(user.email, email));
   } catch (_error) {
     throw new ChatSDKError(
       "bad_request:database",
@@ -211,7 +217,7 @@ export async function getChatById({ id }: { id: string }) {
     if (!selectedChat) {
       return null;
     }
-    console.log("This is selected Chat",selectedChat)
+    console.log("This is selected Chat", selectedChat)
 
     return selectedChat;
   } catch (_error) {
@@ -287,7 +293,7 @@ export async function getVotesByChatId({ id }: { id: string }) {
 }
 
 export async function saveDocument({
-  
+
   title,
   kind,
   content,
@@ -307,7 +313,7 @@ export async function saveDocument({
     return await db
       .insert(document)
       .values({
-        
+
         title,
         kind,
         content,
@@ -577,24 +583,26 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
 }
 
 export async function saveContent({
-    docId,
-    docCreatedAt,
-    chunkIndex,
-    embedding,
-    text,
-  }: { 
-    text: string;
-    docId: string;
-    docCreatedAt: Date;
-    chunkIndex: number;
-    embedding: number[]; }) {
+  docId,
+  docCreatedAt,
+  chunkIndex,
+  embedding,
+  text,
+}: {
+  text: string;
+  docId: string;
+  docCreatedAt: Date;
+  chunkIndex: number;
+  embedding: number[];
+}) {
   try {
-    return await db.insert(content).values({ 
+    return await db.insert(content).values({
       docId,
-    docCreatedAt,
-    chunkIndex,
-    embedding,
-    text,});
+      docCreatedAt,
+      chunkIndex,
+      embedding,
+      text,
+    });
   } catch (_error) {
     throw new ChatSDKError("bad_request:database", "Failed to save messages");
   }
@@ -602,7 +610,7 @@ export async function saveContent({
 
 export async function findContentByEmbedding(
   embedding: number[],
- ) {
+) {
   try {
     console.log("Finding content by embedding:", embedding);
     // Convert JS array to pgvector literal string
@@ -622,7 +630,7 @@ export async function findContentByEmbedding(
       .limit(topK)
       .execute();
 
-      console.log("distance results:", contents);
+    console.log("distance results:", contents);
 
     return contents;
   } catch (error) {
@@ -632,14 +640,13 @@ export async function findContentByEmbedding(
       "Failed to find content by embedding"
     );
   }
-  
 
 
 }
 
 export async function findDocumentFromUrl(url: string,
-  source: "file"|"url",
- ) {
+  source: "file" | "url",
+) {
   try {
     console.log("Finding document from url:", url);
     const documents = await db
@@ -654,7 +661,7 @@ export async function findDocumentFromUrl(url: string,
       .limit(1)
       .execute();
 
-      console.log("Document results:", documents);
+    console.log("Document results:", documents);
 
 
     return documents;
@@ -665,7 +672,33 @@ export async function findDocumentFromUrl(url: string,
       "Error finding document from url"
     );
   }
-  
 
 
+
+
+}
+
+export async function saveResource({
+  userId,
+  filepath,
+  url,
+  filesize,
+}: {
+  userId: string;
+  filepath: string;
+  url: string;
+  filesize: number;
+}) {
+  try {
+    return await db.insert(resource).values({
+      userId,
+      filepath,
+      url,
+      filesize,
+      uploadedAt: new Date()
+    });
+  } catch (_error) {
+    console.log("Error saving resource:", _error);
+    throw new ChatSDKError("bad_request:database", "Failed to save messages");
+  }
 }

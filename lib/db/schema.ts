@@ -20,6 +20,7 @@ export const user = pgTable("User", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   email: varchar("email", { length: 64 }).notNull(),
   password: varchar("password", { length: 64 }),
+  role: varchar("role", { enum: ["user", "admin"] }).notNull().default("user"),
 });
 
 export type User = InferSelectModel<typeof user>;
@@ -40,6 +41,19 @@ export const chat = pgTable("Chat", {
 
 export type Chat = InferSelectModel<typeof chat>;
 
+
+export const resource = pgTable("resource", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  filepath: text("filepath").notNull(),
+  url: text("url").notNull(),
+  filesize: integer("filesize").notNull(),// in bytes
+  userId: uuid("userId")
+    .notNull()
+    .references(() => user.id),
+  uploadedAt: timestamp("uploadedAt").notNull(),
+});
+
+export type Resource = InferSelectModel<typeof resource>;
 
 
 
