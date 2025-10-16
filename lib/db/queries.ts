@@ -324,6 +324,7 @@ export async function saveDocument({
       })
       .returning({ id: document.id, createdAt: document.createdAt });
   } catch (_error) {
+    console.log("Error saving document:", _error);
     throw new ChatSDKError("bad_request:database", "Failed to save document");
   }
 }
@@ -614,18 +615,18 @@ export async function findContentByEmbedding(
   try {
     console.log("Finding content by embedding:", embedding);
     // Convert JS array to pgvector literal string
-    let threshold = 0.4; // Adjust threshold as needed
+    let threshold = 0.3; // Adjust threshold as needed
     const topK = 5; // Number of top similar items to retrieve
-    const vectorLiteral = `'[${embedding.join(",")}]'::vector`;
+    const vectorLiteral = `[${embedding.join(",")}]`;
 
     const contents = await db
       .select()
       .from(content)
       .where(
-        sql.raw(`embedding <=> ${vectorLiteral} < ${threshold}`)
+        sql`1 - (embedding <=> ${sql.raw(`'${vectorLiteral}'::vector`)}) > ${threshold}`
       )
       .orderBy(
-        sql.raw(`embedding <=> ${vectorLiteral}`)
+        sql`embedding <=> ${sql.raw(`'${vectorLiteral}'::vector`)}`
       )
       .limit(topK)
       .execute();

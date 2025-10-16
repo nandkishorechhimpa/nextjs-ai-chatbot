@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+// export const runtime = 'nodejs';
 
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
@@ -22,7 +22,7 @@ const FileSchema = z.object({
       message: "File size should be less than 10MB",
     })
     // Update the file type based on the kind of files you want to accept
-    .refine((file) => ["image/jpeg", "image/png", "application/pdf", "application/word"].includes(file.type), {
+    .refine((file) => ["application/pdf"].includes(file.type), {
       message: "File type should be JPEG or PNG",
     }),
 });
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         //   throw new Error(`Failed to fetch file: ${res.statusText}`);
         // }
         // const buffer = await res.arrayBuffer();
-
+        ``
         // Create temp folder if it doesn't exist
         const tempDir = path.join(process.cwd(), "temp");
         if (!fs.existsSync(tempDir)) {

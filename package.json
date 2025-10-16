@@ -65,6 +65,7 @@
     "papaparse": "^5.5.2",
     "pdf-parse": "^2.2.5",
     "pdf2json": "^3.2.2",
+    "playwright": "^1.56.0",
     "postgres": "^3.4.4",
     "prosemirror-example-setup": "^1.2.3",
     "prosemirror-inputrules": "^1.4.0",

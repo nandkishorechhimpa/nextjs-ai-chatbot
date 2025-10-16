@@ -421,6 +421,11 @@ html, body {
 }
 
 
+
+
+
+
+
 /* Content page css */
 
 .TabsRoot {
@@ -499,4 +504,19 @@ html, body {
 .TabsContent:focus {
 	/* box-shadow: 0 0 0 2px black; */
   outline: none;
+}
+
+
+/* Tail for sent messages */
+.sent::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -7px; /* Adjust position to overlap with the bubble */
+  width: 0;
+  height: 0;
+  border-left: 15px solid #67bc26; /* Color matches bubble */
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-radius: 0 0 10px 0; /* Curve the tail */
 }

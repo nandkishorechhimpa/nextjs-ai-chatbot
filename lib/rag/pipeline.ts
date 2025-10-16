@@ -10,26 +10,25 @@ import { findSimilarContent } from "./retriever";
  * @param {string} userQuery The original user query.
  * @returns {Promise<string>} A promise that resolves to the final, augmented prompt string.
  */
-export const  augmentQueryWithContext = async (userQuery:string): Promise<string> => {
+export const augmentQueryWithContext = async (userQuery: string): Promise<string> => {
     try {
-       
+
 
         // Step 2: Search for similar data using the embedding
-        const relevantDocs = await  findSimilarContent(userQuery);
-        console.log("Relevant Docs:", relevantDocs);    
+        const relevantDocs = await findSimilarContent(userQuery);
+        console.log("Relevant Docs:", relevantDocs);
 
         // Step 3: Combine the original query with the retrieved context
         const context = relevantDocs.length > 0
             ? relevantDocs.map(doc => doc.text).join('\n---\n')
             : "No relevant context found.";
 
-        const augmentedPrompt = `
-          You are an expert assistant. Use the provided context ONLY to answer the user's question.
-          If the context does not contain the answer, state that you do not have the information in the knowledge base.
-          
-          --- CONTEXT ---
-          ${context}
-          --- END CONTEXT --
+        const augmentedPrompt = `You are an expert assistant. Use the provided context ONLY to answer the user's question.
+        
+        REMEBER: *******IF THE CONTEXT DOES NOT CONTAIN THE INFORMATION, SAY "I DON'T KNOW". DO NOT MAKE UP ANSWERS.*******
+           --- CONTEXT-- -
+            ${context}
+        --- END CONTEXT--
         `;
 
         return augmentedPrompt;

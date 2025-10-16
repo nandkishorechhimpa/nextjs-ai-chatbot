@@ -74,18 +74,18 @@ const PurePreviewMessage = ({
           <div className=" flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border mt-[5px]">
             {/* <SparklesIcon size={14} />
              */}
-             <Image
+            <Image
               src="/logo/LogoWhiteBack16-16.png"
               alt="logo"
               className="mil-logo "
               width={16}
               height={16}
-              style={{ width: 16 }} 
-              />
-             
+              style={{ width: 16 }}
+            />
+
           </div>
         )}
-       
+
         <div
           className={cn("flex flex-col", {
             "gap-2 md:gap-4": message.parts?.some(
@@ -158,23 +158,23 @@ const PurePreviewMessage = ({
                       )} */}
                     <MessageContent
                       className={cn({
-                        "w-fit break-words rounded-[10px]  text-right text-white primary-button-color":
+                        "w-fit break-words rounded-[10px]  text-right text-white primary-button-color ":
                           message.role === "user",
-                        "w-fit bg-transparent rounded-[10px]  text-left":
+                        "w-fit  rounded-[10px] third-bg-color pl-4 pt-5 text-left":
                           message.role === "assistant",
                       })}
                       data-testid="message-content"
                       style={
                         message.role === "user"
-                          ? { padding:"14px 18px"}
-                          : {padding:"14px 18px"}
+                          ? { padding: "14px 18px" }
+                          : { padding: "14px 18px" }
                       }
                     >
                       <Response>{sanitizeText(part.text)}</Response>
                     </MessageContent>
                   </div>
                 );
-                
+
 
               }
 
@@ -221,28 +221,28 @@ const PurePreviewMessage = ({
               );
             }
 
-            if (type === "tool-createDocument") {
-              const { toolCallId } = part;
+            // if (type === "tool-createDocument") {
+            //   const { toolCallId } = part;
 
-              if (part.output && "error" in part.output) {
-                return (
-                  <div
-                    className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
-                    key={toolCallId}
-                  >
-                    Error creating document: {String(part.output.error)}
-                  </div>
-                );
-              }
+            //   if (part.output && "error" in part.output) {
+            //     return (
+            //       <div
+            //         className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
+            //         key={toolCallId}
+            //       >
+            //         Error creating document: {String(part.output.error)}
+            //       </div>
+            //     );
+            //   }
 
-              return (
-                <DocumentPreview
-                  isReadonly={isReadonly}
-                  key={toolCallId}
-                  result={part.output}
-                />
-              );
-            }
+            //   return (
+            //     <DocumentPreview
+            //       isReadonly={isReadonly}
+            //       key={toolCallId}
+            //       result={part.output}
+            //     />
+            //   );
+            // }
 
             if (type === "tool-updateDocument") {
               const { toolCallId } = part;
@@ -358,28 +358,28 @@ export const ThinkingMessage = () => {
       <div className="flex items-start justify-start gap-3">
         <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
           {/* <SparklesIcon size={14} /> */}
-               <Image
-              src="/logo/LogoWhiteBack16-16.png"
-              alt="logo"
-              className="mil-logo "
-              width={16}
-              height={16}
-              style={{ width: 16 }} 
-              />
+          <Image
+            src="/logo/LogoWhiteBack16-16.png"
+            alt="logo"
+            className="mil-logo "
+            width={16}
+            height={16}
+            style={{ width: 16 }}
+          />
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
           <div className="p-0 gap-4 flex flex-col text-black text-sm dark:text-white">
             {/* <LoadingText>Thinking...</LoadingText> */}
-                <Skeleton
-                  className="w-full h-2 rounded-md"
-                  data-sidebar="menu-skeleton-icon"
+            <Skeleton
+              className="w-full h-2 rounded-md"
+              data-sidebar="menu-skeleton-icon"
             />
-             <Skeleton
-                  className="w-full h-2 rounded-md"
-                  data-sidebar="menu-skeleton-icon"
-            /> 
-          
+            <Skeleton
+              className="w-full h-2 rounded-md"
+              data-sidebar="menu-skeleton-icon"
+            />
+
           </div>
         </div>
       </div>

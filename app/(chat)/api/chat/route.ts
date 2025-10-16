@@ -141,7 +141,7 @@ export async function POST(request: Request) {
 
 
       console.log("This is message:", message);
-      const fullText =  getTextFromMessage(message);
+      const fullText = getTextFromMessage(message);
       console.log("this is fullText", fullText);
 
       context = await augmentQueryWithContext(fullText);
@@ -154,9 +154,9 @@ export async function POST(request: Request) {
       console.log("this is title", title);
 
     } else {
-   
+
       console.log("This is message:", message);
-      const fullText =  getTextFromMessage(message);
+      const fullText = getTextFromMessage(message);
       console.log("this is fullText", fullText);
 
       context = await augmentQueryWithContext(fullText);
@@ -177,26 +177,28 @@ export async function POST(request: Request) {
     }
 
     const messagesFromDb = await getMessagesByChatId({ id });
-     
+
     const contextMessage: ChatMessage = {
-              id: generateUUID(),
-             role: "system",
-              parts: [
-                {
-                  type: "text",
-                  text: `You are an expert assistant. Answer the user's question ONLY based on the CONTEXT below. 
-Do NOT make up answers. If the answer is not present in the CONTEXT, respond politely: 
-"I'm sorry, but I don’t have enough information in the provided context to answer that question."
-                  --- CONTEXT START ---
-                  ${context}
-                  --- CONTEXT END ---`
-                }
-              ],
-        };
-    console.log("Msg::",contextMessage);
+      id: generateUUID(),
+      role: "system",
+      parts: [
+        {
+          type: "text",
+          text: `You are an expert assistant. Use the provided context ONLY to answer the user's question.
+        
+        REMEBER: *******IF THE CONTEXT DOES NOT CONTAIN THE INFORMATION, SAY "I DON'T KNOW". DO NOT MAKE UP ANSWERS.*******
+                      --- CONTEXT START ---
+                      ${context}
+                      --- CONTEXT END ---`
+        }
+      ],
+    };
+    console.log("Msg::", contextMessage);
 
     console.log("this is messagesFromDb", messagesFromDb);
+
     const uiMessages = [contextMessage, ...convertToUIMessages(messagesFromDb), message];
+    // const uiMessages = [...convertToUIMessages(messagesFromDb), message];
     console.log("this is uiMessages", uiMessages);
 
     const { longitude, latitude, city, country } = geolocation(request);
@@ -226,23 +228,23 @@ Do NOT make up answers. If the answer is not present in the CONTEXT, respond pol
 
     let finalMergedUsage: AppUsage | undefined;
 
-        const stream = createUIMessageStream({
-          execute: ({ writer: dataStream }) => {
-            let selectedModelType = "chat-model"
-            const result = streamText({
-              model: groq('openai/gpt-oss-20b'),
-              system: systemPrompt({ requestHints }),
-              messages: convertToModelMessages(uiMessages),
-              stopWhen: stepCountIs(5),
-              experimental_activeTools:
-              selectedModelType === "chat-model-reasoning"
-               ? []
-                : [
-                  "getWeather",
-                  "createDocument",
-                  "updateDocument",
-                  "requestSuggestions",
-                ],
+    const stream = createUIMessageStream({
+      execute: ({ writer: dataStream }) => {
+        let selectedModelType = "chat-model"
+        const result = streamText({
+          model: groq('openai/gpt-oss-20b'),
+          system: systemPrompt({ requestHints }),
+          messages: convertToModelMessages(uiMessages),
+          stopWhen: stepCountIs(5),
+          experimental_activeTools:
+            selectedModelType === "chat-model-reasoning"
+              ? []
+              : [
+                "getWeather",
+                "createDocument",
+                "updateDocument",
+                "requestSuggestions",
+              ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
             getWeather,
@@ -301,7 +303,7 @@ Do NOT make up answers. If the answer is not present in the CONTEXT, respond pol
       },
       generateId: generateUUID,
       onFinish: async ({ messages }) => {
-        console.log("this is onFinish calling",messages);
+        console.log("this is onFinish calling", messages);
         await saveMessages({
           messages: messages.map((currentMessage) => ({
             id: currentMessage.id,
