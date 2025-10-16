@@ -46,43 +46,43 @@ export async function POST(req: NextRequest) {
 //   return allowed && url.startsWith(allowed);
 // }
 
-export async function scrapeUrlText(url: string): Promise<{ title: string; text: string }> {
-  try {
-    // 1) Fetch HTML
-    const res = await fetch(url, { method: "GET", redirect: "follow" });
-    if (!res.ok) {
-      throw new Error(`Fetch failed: ${res.status}`);
-    }
-    const html = await res.text();
+// async function scrapeUrlText(url: string): Promise<{ title: string; text: string }> {
+//   try {
+//     // 1) Fetch HTML
+//     const res = await fetch(url, { method: "GET", redirect: "follow" });
+//     if (!res.ok) {
+//       throw new Error(`Fetch failed: ${res.status}`);
+//     }
+//     const html = await res.text();
 
-    // 2) Load into Cheerio
-    const $ = cheerio.load(html);
+//     // 2) Load into Cheerio
+//     const $ = cheerio.load(html);
 
-    // 3) Extract title
-    const title = $("title").first().text().trim() || url;
+//     // 3) Extract title
+//     const title = $("title").first().text().trim() || url;
 
-    // 4) Extract body text (simple, preserve spacing)
-    const bodyText = $("body")
-      .text() // get all text content
-      .replace(/\s+\n\s+/g, "\n") // normalize multi-line spacing
-      .replace(/\s{2,}/g, " ")    // remove multiple spaces
-      .trim();
+//     // 4) Extract body text (simple, preserve spacing)
+//     const bodyText = $("body")
+//       .text() // get all text content
+//       .replace(/\s+\n\s+/g, "\n") // normalize multi-line spacing
+//       .replace(/\s{2,}/g, " ")    // remove multiple spaces
+//       .trim();
 
-    // 5) Combine title + body text
-    const accumulatedText = title + "\n\n" + bodyText;
-    console.log(`Scraped ${accumulatedText.length} characters from ${url}`);
+//     // 5) Combine title + body text
+//     const accumulatedText = title + "\n\n" + bodyText;
+//     console.log(`Scraped ${accumulatedText.length} characters from ${url}`);
 
-    //create .txt file into temp folder
-    fs.writeFileSync(`/tmp/scraped-${Date.now()}.txt`, accumulatedText);
+//     //create .txt file into temp folder
+//     fs.writeFileSync(`/tmp/scraped-${Date.now()}.txt`, accumulatedText);
 
-    return { title, text: accumulatedText };
-  } catch (err: any) {
-    console.error("Error scraping URL:", url, err);
-    return { title: url, text: "" };
-  }
-}
+//     return { title, text: accumulatedText };
+//   } catch (err: any) {
+//     console.error("Error scraping URL:", url, err);
+//     return { title: url, text: "" };
+//   }
+// }
 
-export async function processScrapeFromUrl(url: string, reindex: boolean, userId: string) {
+async function processScrapeFromUrl(url: string, reindex: boolean, userId: string) {
   try {
     // 1) ScrapeText from html 
     const accumulatedText = await scrapePageText(url);
@@ -119,44 +119,44 @@ export async function processScrapeFromUrl(url: string, reindex: boolean, userId
       throw new Error(error);
     }
 
-    // //Split into chunks
-    // const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 });
-    // console.log(`Text split into ${chunks.length} chunks.`);
+    //Split into chunks
+    const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 });
+    console.log(`Text split into ${chunks.length} chunks.`);
 
-    // if (chunks.length === 0) {
-    //   return NextResponse.json({ ok: false, error: "No content to index" }, { status: 400 });
-    // }
+    if (chunks.length === 0) {
+      return NextResponse.json({ ok: false, error: "No content to index" }, { status: 400 });
+    }
 
-    // //Generate embedding for chunks
-    // const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
-    // console.log("Processed chunks with embeddings:", chunksWithEmbeddings);
+    //Generate embedding for chunks
+    const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
+    console.log("Processed chunks with embeddings:", chunksWithEmbeddings);
 
-    // // Save document metadata
-    // let documentData = {
-    //   userId: userId,
-    //   kind: "text" as ArtifactKind,
-    //   title: accumulatedText.text.slice(0, 30) + (accumulatedText?.text?.length > 30 ? "..." : ""),
-    //   content: accumulatedText.text,
-    //   source: "url" as const,
-    //   url: url,
-    // };
-    // const documentRes = await saveDocument(documentData);
-    // const { id, createdAt } = documentRes[0];
+    // Save document metadata
+    let documentData = {
+      userId: userId,
+      kind: "text" as ArtifactKind,
+      title: accumulatedText.text.slice(0, 30) + (accumulatedText?.text?.length > 30 ? "..." : ""),
+      content: accumulatedText.text,
+      source: "url" as const,
+      url: url,
+    };
+    const documentRes = await saveDocument(documentData);
+    const { id, createdAt } = documentRes[0];
 
-    // for (let chunk of chunksWithEmbeddings) {
-    //   let contentData = {
-    //     docId: id,
-    //     docCreatedAt: createdAt,
-    //     chunkIndex: chunk.index,
-    //     text: chunk.text,
-    //     embedding: chunk.embedding,
-    //   }
-    //   await saveContent(contentData)
-    // }
+    for (let chunk of chunksWithEmbeddings) {
+      let contentData = {
+        docId: id,
+        docCreatedAt: createdAt,
+        chunkIndex: chunk.index,
+        text: chunk.text,
+        embedding: chunk.embedding,
+      }
+      await saveContent(contentData)
+    }
     console.log("Saved document and content chunks with embeddings");
 
     const title = accumulatedText.title || url;
-    // console.log(`Document "${title}" processed and saved with ${chunksWithEmbeddings.length} chunks.`);
+    console.log(`Document "${title}" processed and saved with ${chunksWithEmbeddings.length} chunks.`);
     return {
       accumulatedText
     }
