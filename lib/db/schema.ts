@@ -147,7 +147,7 @@ export const document = pgTable(
       .notNull()
       .references(() => user.id),
   }
-  
+
 );
 
 export type Document = InferSelectModel<typeof document>;
@@ -205,7 +205,8 @@ export const content = pgTable(
     docCreatedAt: timestamp("docCreatedAt").notNull(),
     chunkIndex: integer("chunkIndex").notNull(),
     text: text("text").notNull(),
-    embedding: vector("embedding", { dimensions: 384 }).notNull(),
+    embedding: vector("embedding", { dimensions: 384 }),
+    embedding_768: vector("embedding_768", { dimensions: 768 }).notNull(),
   },
   (table) => ({
     docRef: foreignKey({

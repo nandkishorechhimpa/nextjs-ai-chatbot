@@ -601,7 +601,7 @@ export async function saveContent({
       docId,
       docCreatedAt,
       chunkIndex,
-      embedding,
+      embedding_768: embedding,
       text,
     });
   } catch (_error) {
@@ -623,10 +623,10 @@ export async function findContentByEmbedding(
       .select()
       .from(content)
       .where(
-        sql`1 - (embedding <=> ${sql.raw(`'${vectorLiteral}'::vector`)}) > ${threshold}`
+        sql`1 - (embedding_768 <=> ${sql.raw(`'${vectorLiteral}'::vector`)}) > ${threshold}`
       )
       .orderBy(
-        sql`embedding <=> ${sql.raw(`'${vectorLiteral}'::vector`)}`
+        sql`embedding_768 <=> ${sql.raw(`'${vectorLiteral}'::vector`)}`
       )
       .limit(topK)
       .execute();

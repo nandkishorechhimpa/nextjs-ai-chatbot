@@ -29,6 +29,20 @@
       "when": 1760017562738,
       "tag": "0003_tense_the_call",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760611298070,
+      "tag": "0004_colorful_tattoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1760614864199,
+      "tag": "0005_polite_bug",
+      "breakpoints": true
     }
   ]
 }

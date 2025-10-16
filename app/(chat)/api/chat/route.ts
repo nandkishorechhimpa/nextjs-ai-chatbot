@@ -184,12 +184,7 @@ export async function POST(request: Request) {
       parts: [
         {
           type: "text",
-          text: `You are an expert assistant. Use the provided context ONLY to answer the user's question.
-        
-        REMEBER: *******IF THE CONTEXT DOES NOT CONTAIN THE INFORMATION, SAY "I DON'T KNOW". DO NOT MAKE UP ANSWERS.*******
-                      --- CONTEXT START ---
-                      ${context}
-                      --- CONTEXT END ---`
+          text: context
         }
       ],
     };
@@ -199,7 +194,7 @@ export async function POST(request: Request) {
 
     const uiMessages = [contextMessage, ...convertToUIMessages(messagesFromDb), message];
     // const uiMessages = [...convertToUIMessages(messagesFromDb), message];
-    console.log("this is uiMessages", uiMessages);
+    // console.log("this is uiMessages", uiMessages);
 
     const { longitude, latitude, city, country } = geolocation(request);
 

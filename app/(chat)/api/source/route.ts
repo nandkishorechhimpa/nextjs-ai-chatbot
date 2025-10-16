@@ -41,10 +41,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: String(err?.message || err) }, { status: 500 });
   }
 }
-function ensureAllowed(url: string) {
-  const allowed = (process.env.ALLOWED_ORIGIN || "").trim();
-  return allowed && url.startsWith(allowed);
-}
+// function ensureAllowed(url: string) {
+//   const allowed = (process.env.ALLOWED_ORIGIN || "").trim();
+//   return allowed && url.startsWith(allowed);
+// }
 
 export async function scrapeUrlText(url: string): Promise<{ title: string; text: string }> {
   try {
@@ -119,44 +119,44 @@ export async function processScrapeFromUrl(url: string, reindex: boolean, userId
       throw new Error(error);
     }
 
-    //Split into chunks
-    const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 });
-    console.log(`Text split into ${chunks.length} chunks.`);
+    // //Split into chunks
+    // const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 });
+    // console.log(`Text split into ${chunks.length} chunks.`);
 
-    if (chunks.length === 0) {
-      return NextResponse.json({ ok: false, error: "No content to index" }, { status: 400 });
-    }
+    // if (chunks.length === 0) {
+    //   return NextResponse.json({ ok: false, error: "No content to index" }, { status: 400 });
+    // }
 
-    //Generate embedding for chunks
-    const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
-    console.log("Processed chunks with embeddings:", chunksWithEmbeddings);
+    // //Generate embedding for chunks
+    // const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
+    // console.log("Processed chunks with embeddings:", chunksWithEmbeddings);
 
-    // Save document metadata
-    let documentData = {
-      userId: userId,
-      kind: "text" as ArtifactKind,
-      title: accumulatedText.text.slice(0, 30) + (accumulatedText?.text?.length > 30 ? "..." : ""),
-      content: accumulatedText.text,
-      source: "url" as const,
-      url: url,
-    };
-    const documentRes = await saveDocument(documentData);
-    const { id, createdAt } = documentRes[0];
+    // // Save document metadata
+    // let documentData = {
+    //   userId: userId,
+    //   kind: "text" as ArtifactKind,
+    //   title: accumulatedText.text.slice(0, 30) + (accumulatedText?.text?.length > 30 ? "..." : ""),
+    //   content: accumulatedText.text,
+    //   source: "url" as const,
+    //   url: url,
+    // };
+    // const documentRes = await saveDocument(documentData);
+    // const { id, createdAt } = documentRes[0];
 
-    for (let chunk of chunksWithEmbeddings) {
-      let contentData = {
-        docId: id,
-        docCreatedAt: createdAt,
-        chunkIndex: chunk.index,
-        text: chunk.text,
-        embedding: chunk.embedding,
-      }
-      await saveContent(contentData)
-    }
+    // for (let chunk of chunksWithEmbeddings) {
+    //   let contentData = {
+    //     docId: id,
+    //     docCreatedAt: createdAt,
+    //     chunkIndex: chunk.index,
+    //     text: chunk.text,
+    //     embedding: chunk.embedding,
+    //   }
+    //   await saveContent(contentData)
+    // }
     console.log("Saved document and content chunks with embeddings");
 
     const title = accumulatedText.title || url;
-    console.log(`Document "${title}" processed and saved with ${chunksWithEmbeddings.length} chunks.`);
+    // console.log(`Document "${title}" processed and saved with ${chunksWithEmbeddings.length} chunks.`);
     return {
       accumulatedText
     }
