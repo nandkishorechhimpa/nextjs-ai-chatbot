@@ -244,30 +244,30 @@ const PurePreviewMessage = ({
             //   );
             // }
 
-            if (type === "tool-updateDocument") {
-              const { toolCallId } = part;
+            // if (type === "tool-updateDocument") {
+            //   const { toolCallId } = part;
 
-              if (part.output && "error" in part.output) {
-                return (
-                  <div
-                    className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
-                    key={toolCallId}
-                  >
-                    Error updating document: {String(part.output.error)}
-                  </div>
-                );
-              }
+            //   if (part.output && "error" in part.output) {
+            //     return (
+            //       <div
+            //         className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-500 dark:bg-red-950/50"
+            //         key={toolCallId}
+            //       >
+            //         Error updating document: {String(part.output.error)}
+            //       </div>
+            //     );
+            //   }
 
-              return (
-                <div className="relative" key={toolCallId}>
-                  <DocumentPreview
-                    args={{ ...part.output, isUpdate: true }}
-                    isReadonly={isReadonly}
-                    result={part.output}
-                  />
-                </div>
-              );
-            }
+            //   return (
+            //     <div className="relative" key={toolCallId}>
+            //       <DocumentPreview
+            //         args={{ ...part.output, isUpdate: true }}
+            //         isReadonly={isReadonly}
+            //         result={part.output}
+            //       />
+            //     </div>
+            //   );
+            // }
 
             if (type === "tool-requestSuggestions") {
               const { toolCallId, state } = part;

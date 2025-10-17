@@ -26,12 +26,12 @@ function PureChatHeader({
 
   const { width: windowWidth } = useWindowSize();
 
-    const { data, status } = useSession();
-  console.log("Data in the chatHeader:",data)
+  const { data, status } = useSession();
+  console.log("Data in the chatHeader:", data)
   return (
     <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2 shadow-sm ">
       {/* <SidebarToggle /> */}
-{/* 
+      {/* 
       {(!open || windowWidth < 768) && (
         <Button
           className="order-2 ml-auto h-8 px-2 md:order-1 md:ml-0 md:h-fit md:px-2"
@@ -45,7 +45,7 @@ function PureChatHeader({
           <span className="md:sr-only">New Chat</span>
         </Button>
       )} */}
-{/* 
+      {/* 
       {!isReadonly && (
         <VisibilitySelector
           chatId={chatId}
@@ -54,19 +54,19 @@ function PureChatHeader({
         />
       )} */}
 
-      { data?.user?.role == "admin" && <Button
+      {data?.user?.role == "admin" && <Button
         asChild
         className="order-3 hidden bg-zinc-900 px-2 text-zinc-50 hover:bg-zinc-800 md:ml-auto md:flex md:h-fit dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         <Link
           href={"/content"}
         >
-        Document Emmbeddings  
+          Document Embedding
         </Link>
       </Button>}
 
       <Header />
-    </header> 
+    </header>
   );
 }
 

@@ -84,19 +84,22 @@ export function DocumentPreview({
     return <LoadingSkeleton artifactKind={result.kind ?? args.kind} />;
   }
 
-  const document: Document | null = previewDocument
-    ? previewDocument
-    : artifact.status === "streaming"
-      ? {
-          title: artifact.title,
-          kind: artifact.kind,
-          content: artifact.content,
-          id: artifact.documentId,
-          createdAt: new Date(),
-          userId: "noop",
-        }
-      : null;
+  // const document: Document | null = previewDocument
+  //   ? previewDocument
+  //   : artifact.status === "streaming"
+  //     ? {
+  //       title: artifact.title,
+  //       kind: artifact.kind,
+  //       content: artifact.content,
+  //       id: artifact.documentId,
+  //       createdAt: new Date(),
+  //       userId: "noop",
+  //       url: "",
+  //       source: null
+  //     }
+  //     : null;
 
+  const document = null; //Remove this line --> only added once to bypass the preview in build
   if (!document) {
     return <LoadingSkeleton artifactKind={artifact.kind} />;
   }
@@ -108,11 +111,11 @@ export function DocumentPreview({
         result={result}
         setArtifact={setArtifact}
       />
-      <DocumentHeader
+      {/* <DocumentHeader
         isStreaming={artifact.status === "streaming"}
         kind={document.kind}
         title={document.title}
-      />
+      /> */}
       <DocumentContent document={document} />
     </div>
   );
@@ -162,18 +165,18 @@ const PureHitboxLayer = ({
         artifact.status === "streaming"
           ? { ...artifact, isVisible: true }
           : {
-              ...artifact,
-              title: result.title,
-              documentId: result.id,
-              kind: result.kind,
-              isVisible: true,
-              boundingBox: {
-                left: boundingBox.x,
-                top: boundingBox.y,
-                width: boundingBox.width,
-                height: boundingBox.height,
-              },
-            }
+            ...artifact,
+            title: result.title,
+            documentId: result.id,
+            kind: result.kind,
+            isVisible: true,
+            boundingBox: {
+              left: boundingBox.x,
+              top: boundingBox.y,
+              width: boundingBox.width,
+              height: boundingBox.height,
+            },
+          }
       );
     },
     [setArtifact, result]
