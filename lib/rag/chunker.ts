@@ -25,8 +25,8 @@ export interface Chunk {
  */
 export function chunkText(
   text: string,
+  options: ChunkOptions = {},
   title?: string,
-  options: ChunkOptions = {}
 ): Chunk[] {
   const chunkSize = options.chunkSize ?? 200; // default 200 words
   const overlap = options.overlap ?? 50;      // default 50 words

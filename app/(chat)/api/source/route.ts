@@ -84,7 +84,7 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
     }
 
     //Split into chunks
-    const chunks = chunkText(accumulatedText.text, accumulatedText.title, { chunkSize: 500, overlap: 100 });
+    const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 }, accumulatedText.title);
     console.log(`Text split into ${chunks.length} chunks.`);
 
     if (chunks.length === 0) {
