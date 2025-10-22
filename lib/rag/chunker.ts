@@ -25,6 +25,7 @@ export interface Chunk {
  */
 export function chunkText(
   text: string,
+  title?: string,
   options: ChunkOptions = {}
 ): Chunk[] {
   const chunkSize = options.chunkSize ?? 200; // default 200 words
@@ -32,6 +33,7 @@ export function chunkText(
 
   // Split text into words
   const words = text.split(/\s+/).filter(Boolean);
+  const ChunkTitle = title ? title.trim() + " " : "";
 
   const chunks: Chunk[] = [];
   let start = 0;
@@ -40,7 +42,7 @@ export function chunkText(
   while (start < words.length) {
     const chunkWords = words.slice(start, start + chunkSize);
     const chunkText = chunkWords.join(" ");
-    chunks.push({ text: chunkText, index });
+    chunks.push({ text: `Title: ${ChunkTitle} - ${chunkText}`, index });
     index++;
     start += chunkSize - overlap;
   }

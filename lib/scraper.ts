@@ -8,46 +8,56 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
     if (!/^https?:\/\//i.test(url)) {
         throw new Error("Invalid URL: must start with http:// or https://");
     }
-
-    const browser = await chromium.launch({
-        headless: true,
-        executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    });
-    const context = await browser.newContext({
-        userAgent:
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-    });
-    const page = await context.newPage();
-
     try {
-        await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
 
-        const title = (await page.title()) || url;
+        const browser = await chromium.launch({
+            headless: true,
 
-        // Extract text while preserving natural spacing
-        const text = await page.evaluate(() => {
-            // Remove script and style elements
-            document.querySelectorAll("script, style, noscript").forEach((el) => el.remove());
+            //********* Remove below line for production deployment ****************
+            executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" // Only for Local testing with specific Chrome version
 
-            // Extract visible text from the body
-            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-            let content = "";
-            while (walker.nextNode()) {
-                const nodeText = walker.currentNode?.textContent ?? "";
-                if (nodeText.trim()) {
-                    content += nodeText + " ";
-                }
-            }
-            console.log(`Extracted ${content.length} characters of text`);
-            console.log(`Sample text: ${content.slice(300, 500)}`);
-            return content.replace(/\s+/g, " ").trim();
         });
+        const context = await browser.newContext({
+            userAgent:
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+        });
+        const page = await context.newPage();
 
-        return { title, text };
+        try {
+            await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
+
+            const title = (await page.title()) || url;
+
+            // Extract text while preserving natural spacing
+            let text = await page.evaluate(() => {
+                // Remove script and style elements
+                document.querySelectorAll("script, style, noscript").forEach((el) => el.remove());
+
+                // Extract visible text from the body
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+                let content = "";
+                while (walker.nextNode()) {
+                    const nodeText = walker.currentNode?.textContent ?? "";
+                    if (nodeText.trim()) {
+                        content += nodeText + " ";
+                    }
+                }
+                console.log(`Extracted ${content.length} characters of text`);
+                console.log(`Sample text: ${content.slice(300, 500)}`);
+                return content.replace(/\s+/g, " ").trim();
+            });
+
+            return { title, text };
+        } catch (error: any) {
+            console.error(`❌ Scraping failed for ${url}:`, error.message);
+            throw new Error(`Failed to scrape ${url}: ${error.message}`);
+        } finally {
+            await browser.close();
+        }
+
+
     } catch (error: any) {
         console.error(`❌ Scraping failed for ${url}:`, error.message);
         throw new Error(`Failed to scrape ${url}: ${error.message}`);
-    } finally {
-        await browser.close();
     }
 }

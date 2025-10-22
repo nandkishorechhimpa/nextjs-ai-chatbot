@@ -46,42 +46,6 @@ export async function POST(req: NextRequest) {
 //   return allowed && url.startsWith(allowed);
 // }
 
-// async function scrapeUrlText(url: string): Promise<{ title: string; text: string }> {
-//   try {
-//     // 1) Fetch HTML
-//     const res = await fetch(url, { method: "GET", redirect: "follow" });
-//     if (!res.ok) {
-//       throw new Error(`Fetch failed: ${res.status}`);
-//     }
-//     const html = await res.text();
-
-//     // 2) Load into Cheerio
-//     const $ = cheerio.load(html);
-
-//     // 3) Extract title
-//     const title = $("title").first().text().trim() || url;
-
-//     // 4) Extract body text (simple, preserve spacing)
-//     const bodyText = $("body")
-//       .text() // get all text content
-//       .replace(/\s+\n\s+/g, "\n") // normalize multi-line spacing
-//       .replace(/\s{2,}/g, " ")    // remove multiple spaces
-//       .trim();
-
-//     // 5) Combine title + body text
-//     const accumulatedText = title + "\n\n" + bodyText;
-//     console.log(`Scraped ${accumulatedText.length} characters from ${url}`);
-
-//     //create .txt file into temp folder
-//     fs.writeFileSync(`/tmp/scraped-${Date.now()}.txt`, accumulatedText);
-
-//     return { title, text: accumulatedText };
-//   } catch (err: any) {
-//     console.error("Error scraping URL:", url, err);
-//     return { title: url, text: "" };
-//   }
-// }
-
 async function processScrapeFromUrl(url: string, reindex: boolean, userId: string) {
   try {
     // 1) ScrapeText from html 
@@ -94,7 +58,7 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
     // return NextResponse.json({ ok: true, accumulatedText }, { status: 200 });
     // 2) Short-circuit if unchanged (string equality; simple but effective for POC)
     try {
-      let source: 'file' | 'url' = "file"
+      let source: 'file' | 'url' = "url"
       const existing = await findDocumentFromUrl(url, source);
       // if (!existing) {
       //   return NextResponse.json({ ok: true, existing: null });
@@ -120,7 +84,7 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
     }
 
     //Split into chunks
-    const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 });
+    const chunks = chunkText(accumulatedText.text, accumulatedText.title, { chunkSize: 500, overlap: 100 });
     console.log(`Text split into ${chunks.length} chunks.`);
 
     if (chunks.length === 0) {
