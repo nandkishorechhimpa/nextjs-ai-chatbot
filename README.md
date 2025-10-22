@@ -16,6 +16,10 @@
 </p>
 <br/>
 
+## EMBEDDING MODEL 
+- Currently we are using [embedding_model = SentenceTransformer('sentence-transformers/all-distilroberta-v1')
+ ] model for embedding for 768 dimensions
+
 ## Features
 
 - [Next.js](https://nextjs.org) App Router
@@ -37,6 +41,10 @@
 ## Model Providers
 
 This template uses the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) to access multiple AI models through a unified interface. The default configuration includes [xAI](https://x.ai) models (`grok-2-vision-1212`, `grok-3-mini`) routed through the gateway.
+
+**Library**: sentence-transformers==4.1.0
+torch==2.7.1
+transformers==4.52.4
 
 ### AI Gateway Authentication
 
