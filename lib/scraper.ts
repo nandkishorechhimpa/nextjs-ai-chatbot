@@ -14,7 +14,7 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
             headless: true,
 
             //********* Remove below line for production deployment ****************
-            executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" // Only for Local testing with specific Chrome version
+            // executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" // Only for Local testing with specific Chrome version
 
         });
         const context = await browser.newContext({
