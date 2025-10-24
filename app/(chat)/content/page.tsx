@@ -27,29 +27,62 @@ export default function Page() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const { data, status } = useSession();
   const [scrapeWebsiteUrl, setScrapeWebsiteUrl] = useState("");
+  const [summary, setSummary] = useState("");
+  const [urls, setUrls] = useState<string[]>([""]); // start with one empty input
+
+
+  const handleAddUrl = () => {
+    if (urls.length < 10) {
+      setUrls([...urls, ""]);
+    }
+  };
+
+  const handleUrlChange = (index: number, value: string) => {
+    const updatedUrls = [...urls];
+    updatedUrls[index] = value;
+    setUrls(updatedUrls);
+  };
+
+  const handleRemoveUrl = (index: number) => {
+    const updatedUrls = urls.filter((_, i) => i !== index);
+    setUrls(updatedUrls);
+  };
+
 
   async function handleSubmit() {
     try {
       setIsSubmitting(true);
       // Handle the submission of dummy data here
-      console.log("Submitted data:", text);
+      console.log("Submitted data:", text, summary);
+      if (!text || text.length === 0 || !summary || summary.length === 0) {
+        toast.error("Please enter both summary and content text!");
+        setIsSubmitting(false);
+        return;
+      }
+      if (summary.length > 100) {
+        toast.error("Summary should be less than 100 characters!");
+        setIsSubmitting(false);
+        return;
+      }
       const response = await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: text }),
+        body: JSON.stringify({ text: text, summary: summary }),
       });
       const result = await response.json();
       toast.success("Data submitted successfully!");
       setIsSubmitting(false);
       setText("");
+      setSummary("");
 
     } catch (error) {
       console.error("Error submitting data:", error);
       toast.error("Error submitting data!");
       setIsSubmitting(false);
       setText("");
+      setSummary("");
 
     }
   }
@@ -127,7 +160,9 @@ export default function Page() {
     try {
       setUploading(true);
 
-      if (!scrapeWebsiteUrl || !isUrlValid(scrapeWebsiteUrl)) {
+      const validUrls = urls.filter((url) => url.trim() !== "");
+
+      if (!validUrls || validUrls.length === 0) {
         toast.error("Please enter a valid URL");
         setUploading(false);
         return;
@@ -135,7 +170,7 @@ export default function Page() {
       const response = await fetch('/api/source',
         {
           method: 'POST',
-          body: JSON.stringify({ url: [scrapeWebsiteUrl], userId: data?.user?.id }),
+          body: JSON.stringify({ url: validUrls, userId: data?.user?.id }),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -146,14 +181,16 @@ export default function Page() {
       }
       const result = await response.json();
       console.log('File processed successfully:', result);
-      toast.success("URL submitted successfully!");
+      toast.success("URL(s) submitted successfully!");
       setUploading(false);
+      setUrls([""]);
 
 
     } catch (error) {
       console.log("Error submitting URL:", error);
       setUploading(false)
-
+      setUrls([""]);
+      toast.error("Error submitting URL!");
 
     }
   }
@@ -201,9 +238,12 @@ export default function Page() {
         </Tabs.List>
 
         <Tabs.Content className="TabsContent" value="text">
-          <div className="px-20 py-20  ">
-            <h1 className="text-2xl font-bold mb-4">Enter your dummy data</h1>
-            <Textarea placeholder="Enter text..." rows={10} className="resize-none" value={text} onChange={(e) => setText(e.target.value)} />
+          <div className="px-20 py-4  ">
+            <h1 className="text-2xl font-bold ">Enter text:</h1>
+            <h2 className="font-semibold py-4">Summary of the content:</h2>
+            <Textarea placeholder="Add a brief summary or relevant keywords (e.g. AI, chatbot, contact info)..." rows={1} className="resize-none mb-2" value={summary} onChange={(e) => setSummary(e.target.value)} />
+            <h2 className="font-semibold py-4">Content</h2>
+            <Textarea placeholder="Enter the content..." rows={10} className="resize-none" value={text} onChange={(e) => setText(e.target.value)} />
             <Button className="mt-2 primary-button-color" onClick={handleSubmit}>Submit</Button>
           </div>
         </Tabs.Content>
@@ -220,10 +260,48 @@ export default function Page() {
         </Tabs.Content>
 
         <Tabs.Content className="TabsContent" value="url">
-          <div className="px-20 py-20  ">
-            <h1 className="text-2xl font-bold mb-4">Scrape website data from URL</h1>
-            <Input placeholder="Enter URL..." className="resize-none" name="url" value={scrapeWebsiteUrl} onChange={(e) => setScrapeWebsiteUrl(e.target.value)} />
-            <Button className="mt-2 primary-button-color" onClick={handleUrlSubmit}>Submit</Button>
+          <div className="px-20 py-20">
+            <h1 className="text-2xl font-bold mb-6">Scrape website data from URLs</h1>
+
+            {urls.map((url, index) => (
+              <div key={index} className="flex items-center gap-3 mb-3">
+                <Input
+                  placeholder={`Enter URL ${index + 1}...`}
+                  className="flex-1"
+                  value={url}
+                  onChange={(e) => handleUrlChange(index, e.target.value)}
+                />
+                {urls.length > 1 && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleRemoveUrl(index)}
+                    className="px-3"
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+            ))}
+
+            <div className="flex items-center gap-3 mt-4">
+              <Button
+                onClick={handleAddUrl}
+                disabled={urls.length >= 10}
+                className="secondary-button-color"
+              >
+                + Add URL
+              </Button>
+
+              <Button className="primary-button-color" onClick={handleUrlSubmit}>
+                Submit All
+              </Button>
+            </div>
+
+            {urls.length >= 10 && (
+              <p className="text-sm text-gray-500 mt-2">
+                You can add up to 10 URLs only.
+              </p>
+            )}
           </div>
         </Tabs.Content>
 

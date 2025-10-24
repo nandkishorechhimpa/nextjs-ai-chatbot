@@ -6,7 +6,7 @@ import { chunkText } from "@/lib/rag/chunker";
 import { generateEmbeddingsForChunks } from "@/lib/rag/embeddings";
 import { ArtifactKind } from "@/components/artifact";
 import fs from 'fs';
-import { scrapePageText } from "@/lib/scraper";
+import { scrapePageStructured, scrapePageText } from "@/lib/scraper";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,8 +55,9 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
       return NextResponse.json({ ok: false, message: "No content to index" }, { status: 200 });
     }
 
-    // return NextResponse.json({ ok: true, accumulatedText }, { status: 200 });
-    // 2) Short-circuit if unchanged (string equality; simple but effective for POC)
+    //2) Short-circuit if unchanged (string equality; simple but effective for POC)
+
+
     try {
       let source: 'file' | 'url' = "url"
       const existing = await findDocumentFromUrl(url, source);
@@ -83,7 +84,7 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
       throw new Error(error);
     }
 
-    //Split into chunks
+    // Split into chunks
     const chunks = chunkText(accumulatedText.text, { chunkSize: 500, overlap: 100 }, accumulatedText.title);
     console.log(`Text split into ${chunks.length} chunks.`);
 
@@ -91,7 +92,7 @@ async function processScrapeFromUrl(url: string, reindex: boolean, userId: strin
       return NextResponse.json({ ok: false, error: "No content to index" }, { status: 400 });
     }
 
-    //Generate embedding for chunks
+    // Generate embedding for chunks
     const chunksWithEmbeddings = await generateEmbeddingsForChunks(chunks);
     console.log("Processed chunks with embeddings:", chunksWithEmbeddings);
 

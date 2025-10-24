@@ -19,10 +19,10 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
     // "Write code to demonstrate Dijkstra's algorithm",
     // "Help me write an essay about Silicon Valley",
     // "What is the weather in San Francisco?",
-      "Can you help me build a website for my business?",
-      "I want to develop a mobile app, where do I start?",
-      "How can AI improve my business operations?",
-      "What is RAG and how does it work in AI systems?",
+    "What AI solutions do you offer?",
+    "How can I contact you?",
+    "Any AI case studies?",
+    "Top IT projects",
   ];
 
   return (
