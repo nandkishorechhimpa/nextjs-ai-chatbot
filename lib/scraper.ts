@@ -13,7 +13,7 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
             headless: true,
 
             //********* Remove below line for production deployment ****************
-            executablePath: executablePath // Only for Local testing with specific Chrome version
+            // executablePath: executablePath // Only for Local testing with specific Chrome version
 
         });
         const context = await browser.newContext({
@@ -75,7 +75,7 @@ export async function scrapePageStructured(url: string): Promise<{
             headless: true,
 
             // ⚠️ Remove below line in production (used only for local testing)
-            executablePath: executablePath,
+            // executablePath: executablePath,
         });
 
         const context = await browser.newContext({
