@@ -11,7 +11,7 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
 
         const browser = await chromium.launch({
             headless: true,
-
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
             //********* Remove below line for production deployment ****************
             // executablePath: executablePath // Only for Local testing with specific Chrome version
 
