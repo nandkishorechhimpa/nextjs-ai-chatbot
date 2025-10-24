@@ -1,4 +1,5 @@
-import { chromium } from "playwright";
+import chromium from '@sparticuz/chromium';
+import playwright from 'playwright-core';
 
 // const executablePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
@@ -7,11 +8,18 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
     if (!/^https?:\/\//i.test(url)) {
         throw new Error("Invalid URL: must start with http:// or https://");
     }
+    let browser;
     try {
 
-        const browser = await chromium.launch({
+        //  browser = await chromium.launch({
+        //     headless: true,
+        //     args: ['--no-sandbox', '--disable-setuid-sandbox']
+        // });
+
+        browser = await playwright.chromium.launch({
+            args: chromium.args,
+            executablePath: await chromium.executablePath(),
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
         const context = await browser.newContext({
             userAgent:
@@ -58,83 +66,83 @@ export async function scrapePageText(url: string): Promise<{ title: string; text
     }
 }
 //split chunks based on paragraph
-export async function scrapePageStructured(url: string): Promise<{
-    title: string;
-    sections: { heading: string; paragraphs: string[] }[];
-}> {
-    if (!/^https?:\/\//i.test(url)) {
-        throw new Error("Invalid URL: must start with http:// or https://");
-    }
+// export async function scrapePageStructured(url: string): Promise<{
+//     title: string;
+//     sections: { heading: string; paragraphs: string[] }[];
+// }> {
+//     if (!/^https?:\/\//i.test(url)) {
+//         throw new Error("Invalid URL: must start with http:// or https://");
+//     }
 
-    let browser;
-    try {
-        browser = await chromium.launch({
-            headless: true,
+//     let browser;
+//     try {
+//         browser = await chromium.launch({
+//             headless: true,
 
-            // ⚠️ Remove below line in production (used only for local testing)
-            // executablePath: executablePath,
-        });
+//             // ⚠️ Remove below line in production (used only for local testing)
+//             // executablePath: executablePath,
+//         });
 
-        const context = await browser.newContext({
-            userAgent:
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-        });
-        const page = await context.newPage();
+//         const context = await browser.newContext({
+//             userAgent:
+//                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+//         });
+//         const page = await context.newPage();
 
-        await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
+//         await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
 
-        const title = (await page.title()) || url;
+//         const title = (await page.title()) || url;
 
-        const sections = await page.evaluate(() => {
-            // 🧹 Remove irrelevant elements
-            document.querySelectorAll("script, style, noscript, iframe, svg, nav, footer, header").forEach((el) => el.remove());
+//         const sections = await page.evaluate(() => {
+//             // 🧹 Remove irrelevant elements
+//             document.querySelectorAll("script, style, noscript, iframe, svg, nav, footer, header").forEach((el) => el.remove());
 
-            // Helper: Clean and normalize text
-            const clean = (txt: string) => txt.replace(/\s+/g, " ").trim();
+//             // Helper: Clean and normalize text
+//             const clean = (txt: string) => txt.replace(/\s+/g, " ").trim();
 
-            // Select headings and paragraphs in DOM order
-            const elements = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6, p"));
+//             // Select headings and paragraphs in DOM order
+//             const elements = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6, p"));
 
-            const sections: { heading: string; paragraphs: string[] }[] = [];
-            let currentHeading = "Introduction";
-            let currentParagraphs: string[] = [];
+//             const sections: { heading: string; paragraphs: string[] }[] = [];
+//             let currentHeading = "Introduction";
+//             let currentParagraphs: string[] = [];
 
-            console.log("Total elements found for structuring:", elements);
-            for (const el of elements) {
-                const tag = el.tagName.toLowerCase();
-                const text = clean(el.textContent || "");
+//             console.log("Total elements found for structuring:", elements);
+//             for (const el of elements) {
+//                 const tag = el.tagName.toLowerCase();
+//                 const text = clean(el.textContent || "");
 
-                if (!text) continue;
+//                 if (!text) continue;
 
-                if (tag.startsWith("h")) {
-                    // Save previous section before starting a new one
-                    if (currentParagraphs.length > 0) {
-                        sections.push({ heading: currentHeading, paragraphs: currentParagraphs });
-                    }
+//                 if (tag.startsWith("h")) {
+//                     // Save previous section before starting a new one
+//                     if (currentParagraphs.length > 0) {
+//                         sections.push({ heading: currentHeading, paragraphs: currentParagraphs });
+//                     }
 
-                    currentHeading = text;
-                    currentParagraphs = [];
-                } else if (tag === "p") {
-                    currentParagraphs.push(text);
-                }
-            }
+//                     currentHeading = text;
+//                     currentParagraphs = [];
+//                 } else if (tag === "p") {
+//                     currentParagraphs.push(text);
+//                 }
+//             }
 
-            // Push the last collected section
-            if (currentParagraphs.length > 0) {
-                sections.push({ heading: currentHeading, paragraphs: currentParagraphs });
-            }
+//             // Push the last collected section
+//             if (currentParagraphs.length > 0) {
+//                 sections.push({ heading: currentHeading, paragraphs: currentParagraphs });
+//             }
 
-            return sections;
-        });
+//             return sections;
+//         });
 
-        console.log(`Extracted ${sections.length} sections from the page.`);
-        await browser.close();
-        return { title, sections };
+//         console.log(`Extracted ${sections.length} sections from the page.`);
+//         await browser.close();
+//         return { title, sections };
 
-    } catch (error: any) {
-        console.error(`❌ Scraping failed for ${url}:`, error.message);
-        throw new Error(`Failed to scrape ${url}: ${error.message}`);
-    } finally {
-        if (browser) await browser.close();
-    }
-}
+//     } catch (error: any) {
+//         console.error(`❌ Scraping failed for ${url}:`, error.message);
+//         throw new Error(`Failed to scrape ${url}: ${error.message}`);
+//     } finally {
+//         if (browser) await browser.close();
+//     }
+// }

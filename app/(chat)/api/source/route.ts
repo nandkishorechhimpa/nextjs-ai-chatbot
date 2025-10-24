@@ -6,7 +6,7 @@ import { chunkText } from "@/lib/rag/chunker";
 import { generateEmbeddingsForChunks } from "@/lib/rag/embeddings";
 import { ArtifactKind } from "@/components/artifact";
 import fs from 'fs';
-import { scrapePageStructured, scrapePageText } from "@/lib/scraper";
+import { scrapePageText } from "@/lib/scraper";
 
 export async function POST(req: NextRequest) {
   try {
