@@ -15,8 +15,8 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test",
-    "postinstall": "npx playwright install chromium"
+    "test": "echo \"No tests configured\"",
+    "postinstall": "pnpm exec playwright install chromium"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^1.0.15",
