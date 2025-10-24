@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   experimental: {
     // ppr: true,
     reactCompiler: false,
-
-
-
   },
   devIndicators: {
     appIsrStatus: false,
@@ -27,11 +24,11 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors http://localhost:3000/", // replace with your company domain
+            value: "frame-ancestors https://www.wearecyborg.com", // replace with your company domain
           },
           {
             key: "X-Frame-Options",
-            value: "ALLOW-FROM http://localhost:3000/", // optional fallback
+            value: "ALLOW-FROM https://www.wearecyborg.com", // optional fallback
           },
         ],
       },
