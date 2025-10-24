@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 
-const executablePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+// const executablePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 //split chunks fix words basisi e.g 500 words, 200 words
 export async function scrapePageText(url: string): Promise<{ title: string; text: string }> {
